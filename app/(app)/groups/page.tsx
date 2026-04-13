@@ -1,9 +1,14 @@
-import { requireSession } from "@/lib/auth";
+"use client";
+
+import { useDemoSession } from "@/components/session-provider";
 import { getGroupById, getUserById, groups, users } from "@/lib/mock-data";
 import { formatDateLabel } from "@/lib/utils";
 
-export default async function GroupsPage() {
-  const session = await requireSession();
+export default function GroupsPage() {
+  const { session } = useDemoSession();
+  if (!session) {
+    return null;
+  }
   const user = getUserById(session.id);
   const activeGroup = user ? getGroupById(user.groupId) : undefined;
 

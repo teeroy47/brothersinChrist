@@ -1,53 +1,41 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-
 import type { Role, SessionUser } from "@/lib/types";
 
-const SESSION_COOKIE = "bic-session";
+export const SESSION_STORAGE_KEY = "bic-session";
 
-export function encodeSession(session: SessionUser) {
-  return encodeURIComponent(JSON.stringify(session));
-}
-
-export function getSessionFromCookieValue(value?: string): SessionUser | null {
+export function getSessionFromStorageValue(value: string | null): SessionUser | null {
   if (!value) {
     return null;
   }
 
   try {
-    return JSON.parse(decodeURIComponent(value)) as SessionUser;
+    return JSON.parse(value) as SessionUser;
   } catch {
     return null;
   }
 }
 
-export async function getSession() {
-  const store = await cookies();
-  return getSessionFromCookieValue(store.get(SESSION_COOKIE)?.value);
-}
-
-export async function requireSession() {
-  const session = await getSession();
-  if (!session) {
-    redirect("/signin");
+export function getStoredSession() {
+  if (typeof window === "undefined") {
+    return null;
   }
 
-  return session;
+  return getSessionFromStorageValue(window.localStorage.getItem(SESSION_STORAGE_KEY));
 }
 
-export async function setSession(session: SessionUser) {
-  const store = await cookies();
-  store.set(SESSION_COOKIE, encodeSession(session), {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: false,
-    path: "/"
-  });
+export function storeSession(session: SessionUser) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
 }
 
-export async function clearSession() {
-  const store = await cookies();
-  store.delete(SESSION_COOKIE);
+export function clearStoredSession() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.removeItem(SESSION_STORAGE_KEY);
 }
 
 export function isLeaderRole(role: Role) {

@@ -1,4 +1,7 @@
-import { requireSession } from "@/lib/auth";
+"use client";
+
+import { LeaderGate } from "@/components/auth-gate";
+import { useDemoSession } from "@/components/session-provider";
 import {
   groups,
   leaderReports,
@@ -6,11 +9,15 @@ import {
   users
 } from "@/lib/mock-data";
 
-export default async function LeaderPage() {
-  const session = await requireSession();
+export default function LeaderPage() {
+  const { session } = useDemoSession();
+  if (!session) {
+    return null;
+  }
 
   return (
-    <div className="stack">
+    <LeaderGate>
+      <div className="stack">
       <div className="card card-dark stack">
         <span className="eyebrow" style={{ color: "rgba(255,255,255,.65)" }}>Leader space</span>
         <h2 className="heading-lg" style={{ margin: 0 }}>Operational oversight for groups, levels, and follow-up.</h2>
@@ -69,6 +76,7 @@ export default async function LeaderPage() {
           ))}
         </div>
       </div>
-    </div>
+      </div>
+    </LeaderGate>
   );
 }

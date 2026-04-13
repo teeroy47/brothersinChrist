@@ -1,11 +1,18 @@
-import { requireSession } from "@/lib/auth";
+"use client";
+
+import { AdminGate } from "@/components/auth-gate";
+import { useDemoSession } from "@/components/session-provider";
 import { groups, levels, notifications, users } from "@/lib/mock-data";
 
-export default async function AdminPage() {
-  const session = await requireSession();
+export default function AdminPage() {
+  const { session } = useDemoSession();
+  if (!session) {
+    return null;
+  }
 
   return (
-    <div className="stack">
+    <AdminGate>
+      <div className="stack">
       <div className="card card-dark stack">
         <span className="eyebrow" style={{ color: "rgba(255,255,255,.65)" }}>Admin oversight</span>
         <h2 className="heading-lg" style={{ margin: 0 }}>Manage the full BIC system with minimal friction.</h2>
@@ -66,6 +73,7 @@ export default async function AdminPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </AdminGate>
   );
 }

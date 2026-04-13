@@ -1,8 +1,11 @@
+"use client";
+
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 
-import { signOutAction } from "@/components/auth-actions";
 import { BrandMark } from "@/components/brand-mark";
+import { useDemoSession } from "@/components/session-provider";
 import { getMainNavigation } from "@/lib/navigation";
 import type { Role, SessionUser } from "@/lib/types";
 
@@ -18,6 +21,9 @@ export function AppShell({
   subtitle?: string;
 }) {
   const nav = getMainNavigation(session.role);
+  const pathname = usePathname();
+  const router = useRouter();
+  const { signOut } = useDemoSession();
 
   return (
     <div className="nav-shell">
@@ -30,16 +36,28 @@ export function AppShell({
         </div>
         <nav className="stack-sm">
           {nav.map((item) => (
-            <Link key={item.href} href={item.href} className="pill">
+            <Link
+              key={item.href}
+              href={item.href}
+              className="pill"
+              aria-current={pathname === item.href ? "page" : undefined}
+              style={pathname === item.href ? { borderColor: "#000", fontWeight: 700 } : undefined}
+            >
               {item.label}
             </Link>
           ))}
         </nav>
-        <form action={signOutAction}>
-          <button type="submit" className="button-secondary" style={{ width: "100%" }}>
-            Sign out
-          </button>
-        </form>
+        <button
+          type="button"
+          className="button-secondary"
+          style={{ width: "100%" }}
+          onClick={() => {
+            signOut();
+            router.push("/");
+          }}
+        >
+          Sign out
+        </button>
       </aside>
 
       <div className="app-main">
@@ -60,7 +78,7 @@ export function AppShell({
 
       <nav className="mobile-nav">
         {nav.slice(0, 5).map((item) => (
-          <Link key={item.href} href={item.href}>
+          <Link key={item.href} href={item.href} data-active={pathname === item.href}>
             {item.label}
           </Link>
         ))}

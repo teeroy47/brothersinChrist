@@ -1,9 +1,14 @@
+"use client";
+
 import { ProgressCard } from "@/components/cards";
-import { requireSession } from "@/lib/auth";
+import { useDemoSession } from "@/components/session-provider";
 import { getProgressMetricsForUser } from "@/lib/mock-data";
 
-export default async function ProgressPage() {
-  const session = await requireSession();
+export default function ProgressPage() {
+  const { session } = useDemoSession();
+  if (!session) {
+    return null;
+  }
   const metrics = getProgressMetricsForUser(session.id);
 
   return (

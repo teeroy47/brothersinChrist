@@ -1,8 +1,13 @@
-import { requireSession } from "@/lib/auth";
+"use client";
+
+import { useDemoSession } from "@/components/session-provider";
 import { getGroupById, getLevelById, getUserById } from "@/lib/mock-data";
 
-export default async function ProfilePage() {
-  const session = await requireSession();
+export default function ProfilePage() {
+  const { session } = useDemoSession();
+  if (!session) {
+    return null;
+  }
   const user = getUserById(session.id);
 
   if (!user) {

@@ -1,7 +1,9 @@
+"use client";
+
 import Link from "next/link";
 
 import { ProgressCard, SectionHeader } from "@/components/cards";
-import { requireSession } from "@/lib/auth";
+import { useDemoSession } from "@/components/session-provider";
 import {
   events,
   getGroupById,
@@ -13,8 +15,11 @@ import {
 } from "@/lib/mock-data";
 import { formatDateLabel } from "@/lib/utils";
 
-export default async function HomePage() {
-  const session = await requireSession();
+export default function HomePage() {
+  const { session } = useDemoSession();
+  if (!session) {
+    return null;
+  }
   const user = getUserById(session.id);
 
   if (!user) {

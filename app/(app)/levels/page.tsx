@@ -1,8 +1,13 @@
-import { requireSession } from "@/lib/auth";
+"use client";
+
+import { useDemoSession } from "@/components/session-provider";
 import { getLevelById, levels } from "@/lib/mock-data";
 
-export default async function LevelsPage() {
-  const session = await requireSession();
+export default function LevelsPage() {
+  const { session } = useDemoSession();
+  if (!session) {
+    return null;
+  }
   const currentLevel = getLevelById(session.id === "u-4" ? "level-5" : "level-2");
 
   return (
