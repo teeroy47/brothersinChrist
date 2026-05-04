@@ -25,10 +25,7 @@ export default function LandingPage() {
         <section className="section">
           <div className="container hero-grid">
             <div className="stack" style={{ gap: 24 }}>
-              <div className="brand-hero">
-                <BrandMark />
-                <span className="eyebrow">Kingdom men. Structured growth. Real accountability.</span>
-              </div>
+              <span className="eyebrow">Kingdom men. Structured growth. Real accountability.</span>
               <h1 className="heading-xl">A discipleship platform for men who intend to grow.</h1>
               <p className="muted" style={{ fontSize: "1.05rem", maxWidth: 680, margin: 0 }}>
                 Brothers In Christ is a mobile-first system for levels, small groups, check-ins, attendance, teaching, and leader oversight. It is built for seriousness, not noise.
