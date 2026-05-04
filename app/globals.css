@@ -139,6 +139,14 @@ select {
   gap: 12px;
 }
 
+.public-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 0;
+}
+
 .pill {
   display: inline-flex;
   align-items: center;
@@ -176,6 +184,12 @@ select {
   background: #fff;
   color: #000;
   border: 1px solid var(--border);
+}
+
+.button:disabled,
+.button-secondary:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
 }
 
 .field {
@@ -265,6 +279,139 @@ select {
 .quote-block {
   border-left: 2px solid var(--gold);
   padding-left: 16px;
+}
+
+.motto-lockup {
+  border: 1px solid rgba(198, 168, 91, 0.45);
+  background: rgba(198, 168, 91, 0.1);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+}
+
+.motto-lockup strong {
+  display: block;
+  font-size: clamp(1.6rem, 4vw, 2.7rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.brand-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.mission-card {
+  border-top: 3px solid var(--gold);
+}
+
+.merch-hero {
+  min-height: 360px;
+  justify-content: flex-end;
+}
+
+.merch-grid {
+  align-items: stretch;
+}
+
+.merch-card {
+  justify-content: space-between;
+}
+
+.merch-preview {
+  min-height: 180px;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, #050505 0%, #2a2a2a 58%, #c6a85b 100%);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: clamp(2rem, 8vw, 4.4rem);
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 767px) {
+  .container {
+    width: min(100% - 24px, 1120px);
+  }
+
+  .section {
+    padding: 40px 0;
+  }
+
+  .card {
+    border-radius: var(--radius-sm);
+    padding: 18px;
+  }
+
+  .heading-xl {
+    font-size: clamp(2.35rem, 13vw, 3.4rem);
+    line-height: 0.98;
+  }
+
+  .heading-lg {
+    font-size: clamp(1.85rem, 10vw, 2.5rem);
+  }
+
+  .space-between,
+  .public-header,
+  .footer-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .public-header > .row,
+  header .row,
+  .card .row {
+    width: 100%;
+  }
+
+  .button,
+  .button-secondary {
+    flex: 1 1 180px;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .pill {
+    min-height: 42px;
+  }
+
+  .motto-lockup {
+    padding: 16px;
+  }
+
+  .motto-lockup strong {
+    font-size: clamp(1.8rem, 10vw, 2.45rem);
+  }
+
+  .mobile-nav {
+    gap: 6px;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 10px 12px;
+  }
+
+  .mobile-nav a {
+    flex: 0 0 auto;
+    min-width: 68px;
+    text-align: center;
+  }
+
+  .topbar .space-between {
+    align-items: stretch;
+  }
+
+  .topbar .pill {
+    align-self: flex-start;
+  }
+
+  .merch-hero {
+    min-height: 420px;
+  }
 }
 
 @media (min-width: 768px) {

@@ -7,6 +7,7 @@ export function getMainNavigation(role: Role) {
     { href: "/levels", label: "Levels" },
     { href: "/groups", label: "Groups" },
     { href: "/community", label: "Community" },
+    { href: "/merch", label: "Merch" },
     { href: "/profile", label: "Profile" }
   ];
 

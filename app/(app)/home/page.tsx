@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { BrandMark } from "@/components/brand-mark";
 import { ProgressCard, SectionHeader } from "@/components/cards";
 import { useDemoSession } from "@/components/session-provider";
 import {
@@ -37,6 +38,7 @@ export default function HomePage() {
       <div className="card card-dark stack">
         <div className="space-between">
           <div className="stack-sm">
+            <BrandMark compact />
             <span className="eyebrow" style={{ color: "rgba(255,255,255,.65)" }}>Welcome back</span>
             <h2 className="heading-lg" style={{ margin: 0 }}>{user.profile.firstName || "Brother"}</h2>
             <p style={{ color: "rgba(255,255,255,.76)", margin: 0 }}>
@@ -46,6 +48,13 @@ export default function HomePage() {
           <span className="pill pill-dark">{user.consistencyScore}% consistency</span>
         </div>
         <p style={{ color: "rgba(255,255,255,.76)", margin: 0 }}>{user.recentActivity}</p>
+        <div className="motto-lockup">
+          <span className="eyebrow" style={{ color: "rgba(255,255,255,.68)" }}>Proverbs 27:17 Motto</span>
+          <strong>Iron sharpens iron.</strong>
+          <p style={{ color: "rgba(255,255,255,.76)", margin: "8px 0 0" }}>
+            To sharpen each other daily into the full image of Christ.
+          </p>
+        </div>
         <div className="row">
           <Link href="/check-in" className="button-secondary">
             Submit check-in
@@ -72,6 +81,17 @@ export default function HomePage() {
       </div>
 
       <div className="grid-2">
+        <div className="card mission-card stack-sm">
+          <span className="eyebrow">Vision</span>
+          <strong className="heading-md">To build a global brotherhood of kingdom men who reflect Jesus Christ and bear lasting fruit.</strong>
+        </div>
+        <div className="card mission-card stack-sm">
+          <span className="eyebrow">Mission</span>
+          <strong className="heading-md">To sharpen each other daily into the full image of Christ.</strong>
+        </div>
+      </div>
+
+      <div className="grid-2">
         <div className="card stack">
           <SectionHeader
             eyebrow="This week"
@@ -85,6 +105,7 @@ export default function HomePage() {
             <Link href="/community" className="pill">Read latest teaching</Link>
             <Link href="/groups" className="pill">Message leader or group</Link>
             <Link href="/progress" className="pill">Review progress</Link>
+            <Link href="/merch" className="pill">Open merch</Link>
           </div>
         </div>
         <div className="card stack">

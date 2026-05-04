@@ -25,7 +25,10 @@ export default function LandingPage() {
         <section className="section">
           <div className="container hero-grid">
             <div className="stack" style={{ gap: 24 }}>
-              <span className="eyebrow">Kingdom men. Structured growth. Real accountability.</span>
+              <div className="brand-hero">
+                <BrandMark />
+                <span className="eyebrow">Kingdom men. Structured growth. Real accountability.</span>
+              </div>
               <h1 className="heading-xl">A discipleship platform for men who intend to grow.</h1>
               <p className="muted" style={{ fontSize: "1.05rem", maxWidth: 680, margin: 0 }}>
                 Brothers In Christ is a mobile-first system for levels, small groups, check-ins, attendance, teaching, and leader oversight. It is built for seriousness, not noise.
@@ -38,8 +41,12 @@ export default function LandingPage() {
                   Open demo access
                 </Link>
               </div>
-              <div className="quote-block muted">
-                “As iron sharpens iron, so one man sharpens another.” Proverbs 27:17
+              <div className="motto-lockup">
+                <span className="eyebrow">Proverbs 27:17 Motto</span>
+                <strong>Iron sharpens iron.</strong>
+                <p className="muted" style={{ margin: "8px 0 0" }}>
+                  "As iron sharpens iron, so one man sharpens another."
+                </p>
               </div>
             </div>
 
@@ -64,10 +71,20 @@ export default function LandingPage() {
         <section className="section">
           <div className="container stack">
             <SectionHeader
-              eyebrow="Mission"
-              title="Build men who walk with God, stay disciplined, and raise other men."
-              body="The system is designed around spiritual growth, brotherhood, bodily discipline, and mature leadership. The experience is calm, clean, and operational."
+              eyebrow="Vision & Mission"
+              title="A global brotherhood sharpened into Christ."
+              body="Brothers In Christ exists to form kingdom men who reflect Jesus Christ in daily obedience, brotherhood, discipline, and lasting fruit."
             />
+            <div className="grid-2">
+              <div className="card mission-card stack-sm">
+                <span className="eyebrow">Vision</span>
+                <strong className="heading-md">To build a global brotherhood of kingdom men who reflect Jesus Christ and bear lasting fruit.</strong>
+              </div>
+              <div className="card mission-card stack-sm">
+                <span className="eyebrow">Mission</span>
+                <strong className="heading-md">To sharpen each other daily into the full image of Christ.</strong>
+              </div>
+            </div>
             <div className="grid-4">
               <MetricCard label="God" value="Prayer + Word" detail="Daily devotion, theology, obedience, Scripture memory." tone="strong" />
               <MetricCard label="Mind" value="Renewal" detail="Truth-shaped thinking, emotional maturity, consistency." />
@@ -161,6 +178,9 @@ export default function LandingPage() {
                 <Link href="/signin" className="button-secondary">
                   Explore the demo
                 </Link>
+                <Link href="/merch" className="button-secondary">
+                  View merch
+                </Link>
               </div>
             </div>
           </div>
@@ -170,7 +190,7 @@ export default function LandingPage() {
       <footer className="container" style={{ padding: "24px 0 48px" }}>
         <div className="space-between">
           <span className="muted">Brothers In Christ. Kingdom-focused discipleship for men.</span>
-          <span className="muted">Home · Levels · Groups · Community · Profile</span>
+          <span className="muted">Home - Levels - Groups - Community - Merch - Profile</span>
         </div>
       </footer>
     </>
