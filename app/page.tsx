@@ -28,7 +28,7 @@ export default function LandingPage() {
               <span className="eyebrow">Kingdom men. Structured growth. Real accountability.</span>
               <h1 className="heading-xl">A discipleship platform for men who intend to grow.</h1>
               <p className="muted" style={{ fontSize: "1.05rem", maxWidth: 680, margin: 0 }}>
-                Brothers In Christ is a mobile-first system for levels, small groups, check-ins, attendance, teaching, and leader oversight. It is built for seriousness, not noise.
+                Brothers In Christ is a mobile-first brotherhood for levels, small groups, check-ins, attendance, teaching, and leader oversight. It is built for seriousness, not noise.
               </p>
               <div className="row">
                 <Link href="/signup" className="button">
@@ -38,17 +38,17 @@ export default function LandingPage() {
                   Open demo access
                 </Link>
               </div>
-              <div className="motto-lockup">
-                <span className="eyebrow">Proverbs 27:17 Motto</span>
+              <div className="scripture-lockup core-scripture-lockup">
+                <span className="eyebrow">Proverbs 27:17 Core Scripture</span>
                 <strong>Iron sharpens iron.</strong>
-                <p className="muted" style={{ margin: "8px 0 0" }}>
+                <p className="muted scripture-text" style={{ margin: "8px 0 0" }}>
                   "As iron sharpens iron, so one man sharpens another."
                 </p>
               </div>
             </div>
 
             <div className="card card-dark stack">
-              <span className="eyebrow" style={{ color: "rgba(255,255,255,.65)" }}>What the system answers</span>
+              <span className="eyebrow" style={{ color: "rgba(255,255,255,.65)" }}>What the brotherhood answers</span>
               <div className="stack-sm">
                 <strong className="heading-md">Where do I belong?</strong>
                 <span style={{ color: "rgba(255,255,255,.72)" }}>Every brother has a level, a group, and visible leadership covering.</span>
@@ -147,7 +147,7 @@ export default function LandingPage() {
               <SectionHeader
                 eyebrow="Why accountability matters"
                 title="Men grow faster when someone is close enough to ask the hard questions."
-                body="BIC keeps accountability direct, private, and spiritually useful without turning it into a surveillance system."
+                body="BIC keeps accountability direct, private, and spiritually useful without turning it into surveillance."
               />
             </div>
           </div>
@@ -159,14 +159,14 @@ export default function LandingPage() {
               <span className="eyebrow" style={{ color: "rgba(255,255,255,.65)" }}>Testimonials</span>
               <h2 className="heading-lg">Placeholder for brotherhood testimonies</h2>
               <p style={{ color: "rgba(255,255,255,.76)", margin: 0 }}>
-                Use this section for real stories from men whose prayer, discipline, leadership, and brotherhood life have deepened through the system.
+                Use this section for real stories from men whose prayer, discipline, leadership, and brotherhood life have deepened through BIC.
               </p>
             </div>
             <div className="card stack">
               <SectionHeader
                 eyebrow="Call to action"
                 title="Enter a serious discipleship environment."
-                body="This is not just a community. It is a system for building strong Kingdom men in a traceable, accountable way."
+                body="This is not just a community. It is a brotherhood for building strong Kingdom men in a clear, accountable way."
               />
               <div className="row">
                 <Link href="/signup" className="button">

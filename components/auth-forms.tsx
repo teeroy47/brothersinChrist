@@ -74,7 +74,7 @@ export function SignUpForm() {
     >
       <div className="stack-sm">
         <span className="eyebrow">Onboarding</span>
-        <h1 className="heading-lg">Join the system</h1>
+        <h1 className="heading-lg">Join the Brotherhood</h1>
         <p className="muted" style={{ margin: 0 }}>
           Essential details first. Non-essential history, testimony, and long-form goals can be added after entry.
         </p>

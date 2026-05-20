@@ -5,7 +5,7 @@ import { BrandMark } from "@/components/brand-mark";
 const merchItems = [
   {
     name: "Iron Sharpens Iron Tee",
-    detail: "Everyday black tee with the Proverbs 27:17 motto.",
+    detail: "Everyday black tee anchored by the Proverbs 27:17 core scripture.",
     price: "Coming soon"
   },
   {
@@ -40,12 +40,12 @@ export default function MerchPage() {
           <div className="container stack">
             <div className="card card-dark stack merch-hero">
               <span className="eyebrow" style={{ color: "rgba(255,255,255,.65)" }}>Merch</span>
-              <h1 className="heading-xl">Wear the brotherhood. Carry the motto.</h1>
+              <h1 className="heading-xl">Wear the brotherhood. Carry the core scripture.</h1>
               <p style={{ color: "rgba(255,255,255,.76)", margin: 0 }}>
                 BIC merch is a visible reminder that kingdom men are sharpened daily into the full image of Christ.
               </p>
-              <div className="motto-lockup">
-                <span className="eyebrow" style={{ color: "rgba(255,255,255,.68)" }}>Proverbs 27:17</span>
+              <div className="scripture-lockup">
+                <span className="eyebrow" style={{ color: "rgba(255,255,255,.68)" }}>Proverbs 27:17 Core Scripture</span>
                 <strong>Iron sharpens iron.</strong>
                 <p style={{ color: "rgba(255,255,255,.76)", margin: "8px 0 0" }}>
                   "As iron sharpens iron, so one man sharpens another."

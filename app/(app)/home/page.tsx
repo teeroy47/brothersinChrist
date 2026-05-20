@@ -48,8 +48,8 @@ export default function HomePage() {
           <span className="pill pill-dark">{user.consistencyScore}% consistency</span>
         </div>
         <p style={{ color: "rgba(255,255,255,.76)", margin: 0 }}>{user.recentActivity}</p>
-        <div className="motto-lockup">
-          <span className="eyebrow" style={{ color: "rgba(255,255,255,.68)" }}>Proverbs 27:17 Motto</span>
+        <div className="scripture-lockup">
+          <span className="eyebrow" style={{ color: "rgba(255,255,255,.68)" }}>Proverbs 27:17 Core Scripture</span>
           <strong>Iron sharpens iron.</strong>
           <p style={{ color: "rgba(255,255,255,.76)", margin: "8px 0 0" }}>
             To sharpen each other daily into the full image of Christ.

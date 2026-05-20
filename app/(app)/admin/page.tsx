@@ -15,9 +15,9 @@ export default function AdminPage() {
       <div className="stack">
       <div className="card card-dark stack">
         <span className="eyebrow" style={{ color: "rgba(255,255,255,.65)" }}>Admin oversight</span>
-        <h2 className="heading-lg" style={{ margin: 0 }}>Manage the full BIC system with minimal friction.</h2>
+        <h2 className="heading-lg" style={{ margin: 0 }}>Manage the full BIC brotherhood with minimal friction.</h2>
         <p style={{ color: "rgba(255,255,255,.76)", margin: 0 }}>
-          Signed in as {session.name}. Assign levels, groups, leaders, recurring events, and system-wide content from one operational surface.
+          Signed in as {session.name}. Assign levels, groups, leaders, recurring events, and brotherhood-wide content from one operational surface.
         </p>
       </div>
 
