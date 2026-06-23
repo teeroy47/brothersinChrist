@@ -5,9 +5,17 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 import { BrandMark } from "@/components/brand-mark";
+import StaggeredMenu from "@/components/staggered-menu";
 import { useDemoSession } from "@/components/session-provider";
 import { getMainNavigation } from "@/lib/navigation";
 import type { Role, SessionUser } from "@/lib/types";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 export function AppShell({
   session,
@@ -25,64 +33,68 @@ export function AppShell({
   const router = useRouter();
   const { signOut } = useDemoSession();
 
+  const handleSignOut = () => {
+    signOut();
+    router.push("/");
+  };
+
+  const staggerMenuItems = nav.map(item => ({
+    label: item.label,
+    link: item.href
+  }));
+
+  staggerMenuItems.push({ label: 'Sign Out', link: '/' }); // We handle signout via click on mobile using onMenuClose if needed, or just link. Let's not hook it to the generic link perfectly, wait.
+
   return (
     <div className="nav-shell">
-      <aside className="sidebar">
-        <BrandMark compact />
-        <div className="card card-dark stack-sm">
-          <span className="eyebrow" style={{ color: "rgba(255,255,255,.65)" }}>Signed in as</span>
-          <strong>{session.name}</strong>
-          <span style={{ color: "rgba(255,255,255,.7)", textTransform: "capitalize" }}>{formatRoleLabel(session.role)}</span>
-        </div>
-        <nav className="stack-sm">
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="pill"
-              aria-current={pathname === item.href ? "page" : undefined}
-              style={pathname === item.href ? { borderColor: "#000", fontWeight: 700 } : undefined}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <button
-          type="button"
-          className="button-secondary"
-          style={{ width: "100%" }}
-          onClick={() => {
-            signOut();
-            router.push("/");
-          }}
-        >
-          Sign out
-        </button>
-      </aside>
-
       <div className="app-main">
         <div className="container">
-          <header className="topbar stack-sm">
-            <span className="eyebrow">Brothers In Christ</span>
-            <div className="space-between">
-              <div className="stack-sm" style={{ gap: 6 }}>
-                <h1 className="heading-lg">{title}</h1>
-                {subtitle ? <p className="muted" style={{ margin: 0 }}>{subtitle}</p> : null}
+          <header className="topbar space-between" style={{ paddingBottom: 24, marginBottom: 24, borderBottom: "1px solid var(--border)", alignItems: "center" }}>
+            <div className="row" style={{ gap: 16 }}>
+              <div>
+                <StaggeredMenu
+                  position="left"
+                  items={staggerMenuItems}
+                  displayItemNumbering={true}
+                  menuButtonColor="var(--foreground)"
+                  openMenuButtonColor="#fff"
+                  changeMenuColorOnOpen={true}
+                  colors={['#111827', '#0a0e17']}
+                  accentColor="var(--gold)"
+                />
               </div>
-              <span className="pill">{formatRoleLabel(session.role)}</span>
+              <div className="stack-sm" style={{ gap: 2 }}>
+                <h1 className="heading-md" style={{ margin: 0, textTransform: "uppercase" }}>
+                  {nav.find(item => item.href === pathname)?.label || title}
+                </h1>
+              </div>
+            </div>
+            <div className="row">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button type="button" className="pill" style={{ cursor: "pointer", background: "transparent", color: "var(--foreground)" }}>
+                    {session.name}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent style={{ minWidth: 200 }} align="end">
+                  <div className="stack-sm" style={{ padding: "8px 12px" }}>
+                    <strong style={{ fontSize: "0.9rem" }}>{session.name}</strong>
+                    <span className="muted" style={{ fontSize: "0.8rem", textTransform: "capitalize" }}>{formatRoleLabel(session.role)}</span>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => router.push("/profile")}>
+                    View Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut} style={{ color: "var(--destructive, red)" }}>
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </header>
           {children}
         </div>
       </div>
-
-      <nav className="mobile-nav">
-        {nav.slice(0, 5).map((item) => (
-          <Link key={item.href} href={item.href} data-active={pathname === item.href}>
-            {item.label}
-          </Link>
-        ))}
-      </nav>
     </div>
   );
 }

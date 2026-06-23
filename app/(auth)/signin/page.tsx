@@ -6,11 +6,11 @@ export default function SignInPage() {
   return (
     <div className="stack">
       <SignInForm />
-      <div className="row" style={{ justifyContent: "space-between" }}>
-        <Link href="/forgot-password" className="muted">
-          Forgot password
+      <div className="row" style={{ justifyContent: "center", gap: "24px" }}>
+        <Link href="/forgot-password" className="muted" style={{ fontSize: "0.9rem" }}>
+          Forgot password?
         </Link>
-        <Link href="/signup" className="muted">
+        <Link href="/signup" className="muted" style={{ fontSize: "0.9rem" }}>
           Need an account?
         </Link>
       </div>

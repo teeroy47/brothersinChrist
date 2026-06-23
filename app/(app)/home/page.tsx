@@ -34,29 +34,29 @@ export default function HomePage() {
   const metrics = getProgressMetricsForUser(user.id);
 
   return (
-    <div className="stack">
-      <div className="card card-dark stack">
+    <div className="stack" style={{ gap: 40 }}>
+      <div className="card card-dark stack" style={{ borderTop: "4px solid var(--gold)" }}>
         <div className="space-between">
           <div className="stack-sm">
             <BrandMark compact />
-            <span className="eyebrow" style={{ color: "rgba(255,255,255,.65)" }}>Welcome back</span>
-            <h2 className="heading-lg" style={{ margin: 0 }}>{user.profile.firstName || "Brother"}</h2>
-            <p style={{ color: "rgba(255,255,255,.76)", margin: 0 }}>
+            <span className="eyebrow" style={{ color: "var(--gold)" }}>Welcome back</span>
+            <h2 className="heading-lg" style={{ margin: 0, textTransform: "uppercase" }}>{user.profile.firstName || "Brother"}</h2>
+            <p style={{ color: "rgba(255,255,255,.76)", margin: 0, fontSize: "1.1rem" }}>
               {level?.title} · {group?.name}
             </p>
           </div>
-          <span className="pill pill-dark">{user.consistencyScore}% consistency</span>
+          <span className="pill" style={{ background: "var(--gold)", color: "#000", borderColor: "var(--gold)" }}>{user.consistencyScore}% consistency</span>
         </div>
         <p style={{ color: "rgba(255,255,255,.76)", margin: 0 }}>{user.recentActivity}</p>
-        <div className="scripture-lockup">
-          <span className="eyebrow" style={{ color: "rgba(255,255,255,.68)" }}>Proverbs 27:17 Core Scripture</span>
-          <strong>Iron sharpens iron.</strong>
+        <div className="scripture-lockup core-scripture-lockup" style={{ background: "transparent", borderColor: "rgba(255,255,255,0.1)", boxShadow: "none", padding: 0 }}>
+          <span className="eyebrow" style={{ color: "var(--gold)" }}>Proverbs 27:17 Core Scripture</span>
+          <strong style={{ marginTop: 8, color: "#fff" }}>Iron sharpens iron.</strong>
           <p style={{ color: "rgba(255,255,255,.76)", margin: "8px 0 0" }}>
             To sharpen each other daily into the full image of Christ.
           </p>
         </div>
-        <div className="row">
-          <Link href="/check-in" className="button-secondary">
+        <div className="row" style={{ marginTop: 16 }}>
+          <Link href="/check-in" className="button" style={{ background: "var(--gold)", color: "#000" }}>
             Submit check-in
           </Link>
           <Link href="/progress" className="button-secondary">
@@ -67,13 +67,13 @@ export default function HomePage() {
 
       <div className="grid-2">
         <div className="card stack-sm">
-          <span className="eyebrow">Today&apos;s devotion</span>
-          <strong className="heading-md">{visiblePosts[0]?.title}</strong>
+          <span className="eyebrow" style={{ color: "var(--gold)" }}>Today&apos;s devotion</span>
+          <strong className="heading-md" style={{ textTransform: "uppercase" }}>{visiblePosts[0]?.title}</strong>
           <p className="muted" style={{ margin: 0 }}>{visiblePosts[0]?.excerpt}</p>
         </div>
         <div className="card stack-sm">
-          <span className="eyebrow">Upcoming meeting</span>
-          <strong className="heading-md">{upcoming?.title}</strong>
+          <span className="eyebrow" style={{ color: "var(--gold)" }}>Upcoming meeting</span>
+          <strong className="heading-md" style={{ textTransform: "uppercase" }}>{upcoming?.title}</strong>
           <p className="muted" style={{ margin: 0 }}>
             {upcoming ? `${formatDateLabel(upcoming.when)} · ${upcoming.location}` : "No upcoming event scheduled."}
           </p>
@@ -81,13 +81,13 @@ export default function HomePage() {
       </div>
 
       <div className="grid-2">
-        <div className="card mission-card stack-sm">
+        <div className="card mission-card stack-sm" style={{ padding: 32 }}>
           <span className="eyebrow">Vision</span>
-          <strong className="heading-md">To build a global brotherhood of kingdom men who reflect Jesus Christ and bear lasting fruit.</strong>
+          <strong className="heading-md" style={{ fontSize: "1.25rem", textTransform: "uppercase" }}>To build a global brotherhood of kingdom men who reflect Jesus Christ and bear lasting fruit.</strong>
         </div>
-        <div className="card mission-card stack-sm">
+        <div className="card mission-card stack-sm" style={{ padding: 32 }}>
           <span className="eyebrow">Mission</span>
-          <strong className="heading-md">To sharpen each other daily into the full image of Christ.</strong>
+          <strong className="heading-md" style={{ fontSize: "1.25rem", textTransform: "uppercase" }}>To sharpen each other daily into the full image of Christ.</strong>
         </div>
       </div>
 
@@ -114,13 +114,13 @@ export default function HomePage() {
             title="Brotherhood reminder"
             body="Strength is formed in hidden faithfulness."
           />
-          <div className="quote-block">
+          <div className="quote-block" style={{ borderLeftColor: "var(--gold)" }}>
             <p style={{ margin: 0 }}>
               A disciplined man is not built by pressure alone. He is built by repeated surrender, truth, and brotherhood.
             </p>
           </div>
           <div className="metric">
-            <strong>{notifications[0]?.title}</strong>
+            <strong style={{ textTransform: "uppercase" }}>{notifications[0]?.title}</strong>
             <p className="muted" style={{ marginBottom: 0 }}>{notifications[0]?.body}</p>
           </div>
         </div>

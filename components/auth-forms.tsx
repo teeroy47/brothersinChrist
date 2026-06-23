@@ -5,6 +5,13 @@ import { useState } from "react";
 
 import { useDemoSession } from "@/components/session-provider";
 import { getSessionOptions } from "@/lib/mock-data";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function SignInForm() {
   const { signIn } = useDemoSession();
@@ -15,6 +22,7 @@ export function SignInForm() {
   return (
     <form
       className="card stack"
+      style={{ alignItems: "center", textAlign: "center", padding: "2rem" }}
       onSubmit={(event) => {
         event.preventDefault();
         signIn(userId);
@@ -22,28 +30,39 @@ export function SignInForm() {
         router.push(next || "/home");
       }}
     >
-      <div className="stack-sm">
+      <div className="stack-sm" style={{ alignItems: "center" }}>
         <span className="eyebrow">Demo access</span>
         <h1 className="heading-lg">Enter the brotherhood</h1>
-        <p className="muted" style={{ margin: 0 }}>
+        <p className="muted" style={{ margin: 0, maxWidth: "400px" }}>
           This starter uses seeded demo accounts so you can inspect member, leader, and admin experiences immediately.
         </p>
       </div>
 
-      <label className="field">
+      <div className="field" style={{ width: "100%", textAlign: "left" }}>
         <span>Select a role</span>
-        <select name="userId" value={userId} onChange={(event) => setUserId(event.target.value)}>
-          {options.map((option) => (
-            <option key={option.id} value={option.id}>
-              {option.name} · {option.description}
-            </option>
-          ))}
-        </select>
-      </label>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="dropdown-trigger-button" type="button">
+              {options.find(o => o.id === userId)?.name || "Select role"}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent style={{ width: "var(--radix-dropdown-menu-trigger-width)" }}>
+            <DropdownMenuRadioGroup value={userId} onValueChange={setUserId}>
+              {options.map((option) => (
+                <DropdownMenuRadioItem key={option.id} value={option.id}>
+                  {option.name} · {option.description}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
 
-      <button className="button" type="submit">
-        Sign in
-      </button>
+      <div className="row" style={{ width: "100%", marginTop: "8px" }}>
+        <button className="button" type="submit" style={{ flex: 1 }}>
+          Sign in
+        </button>
+      </div>
     </form>
   );
 }
@@ -62,6 +81,7 @@ export function SignUpForm() {
   return (
     <form
       className="card stack"
+      style={{ alignItems: "center", textAlign: "center", padding: "2rem" }}
       onSubmit={(event) => {
         event.preventDefault();
         if (!form.fullName.trim()) {
@@ -72,15 +92,15 @@ export function SignUpForm() {
         router.push("/home");
       }}
     >
-      <div className="stack-sm">
+      <div className="stack-sm" style={{ alignItems: "center" }}>
         <span className="eyebrow">Onboarding</span>
         <h1 className="heading-lg">Join the Brotherhood</h1>
-        <p className="muted" style={{ margin: 0 }}>
+        <p className="muted" style={{ margin: 0, maxWidth: "400px" }}>
           Essential details first. Non-essential history, testimony, and long-form goals can be added after entry.
         </p>
       </div>
 
-      <label className="field">
+      <label className="field" style={{ width: "100%", textAlign: "left" }}>
         <span>Full name</span>
         <input
           name="fullName"
@@ -90,7 +110,7 @@ export function SignUpForm() {
           onChange={(event) => setForm((current) => ({ ...current, fullName: event.target.value }))}
         />
       </label>
-      <label className="field">
+      <label className="field" style={{ width: "100%", textAlign: "left" }}>
         <span>Email</span>
         <input
           name="email"
@@ -101,7 +121,7 @@ export function SignUpForm() {
           onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
         />
       </label>
-      <label className="field">
+      <label className="field" style={{ width: "100%", textAlign: "left" }}>
         <span>Phone number</span>
         <input
           name="phone"
@@ -111,7 +131,7 @@ export function SignUpForm() {
           onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
         />
       </label>
-      <label className="field">
+      <label className="field" style={{ width: "100%", textAlign: "left" }}>
         <span>City</span>
         <input
           name="city"
@@ -120,7 +140,7 @@ export function SignUpForm() {
           onChange={(event) => setForm((current) => ({ ...current, city: event.target.value }))}
         />
       </label>
-      <label className="field">
+      <label className="field" style={{ width: "100%", textAlign: "left" }}>
         <span>Church or fellowship</span>
         <input
           name="church"
@@ -130,9 +150,11 @@ export function SignUpForm() {
         />
       </label>
 
-      <button className="button" type="submit">
-        Create profile
-      </button>
+      <div className="row" style={{ width: "100%", marginTop: "8px" }}>
+        <button className="button" type="submit" style={{ flex: 1 }}>
+          Create profile
+        </button>
+      </div>
     </form>
   );
 }

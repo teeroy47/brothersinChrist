@@ -6,9 +6,11 @@ export default function SignUpPage() {
   return (
     <div className="stack">
       <SignUpForm />
-      <Link href="/signin" className="muted">
-        Already have an account?
-      </Link>
+      <div className="row" style={{ justifyContent: "center" }}>
+        <Link href="/signin" className="muted" style={{ fontSize: "0.9rem" }}>
+          Already have an account? Sign in
+        </Link>
+      </div>
     </div>
   );
 }

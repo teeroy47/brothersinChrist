@@ -7,7 +7,8 @@ const revealSelector = [
   ".card",
   ".metric",
   ".scripture-lockup",
-  ".merch-preview"
+  ".merch-preview",
+  ".hero-text"
 ].join(",");
 
 export function ScrollReveal() {

@@ -1,6 +1,19 @@
+"use client";
+
+import { useState } from "react";
 import { checkInTemplate, submissions } from "@/lib/mock-data";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function CheckInPage() {
+  // Simple state for boolean questions
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+
   return (
     <div className="stack">
       <div className="card card-dark stack">
@@ -13,20 +26,29 @@ export default function CheckInPage() {
 
       <form className="card stack">
         {checkInTemplate.questions.map((question) => (
-          <label key={question.id} className="field">
+          <div key={question.id} className="field">
             <span>{question.prompt}</span>
             {question.type === "text" ? <textarea placeholder="Write briefly and honestly." /> : null}
             {question.type === "boolean" ? (
-              <select defaultValue="">
-                <option value="" disabled>
-                  Select
-                </option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-              </select>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="dropdown-trigger-button" type="button">
+                    {answers[question.id] === "yes" ? "Yes" : answers[question.id] === "no" ? "No" : "Select"}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuRadioGroup 
+                    value={answers[question.id] || ""} 
+                    onValueChange={(val) => setAnswers(prev => ({ ...prev, [question.id]: val }))}
+                  >
+                    <DropdownMenuRadioItem value="yes">Yes</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="no">No</DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : null}
             {question.type === "rating" ? <input type="range" min={1} max={5} defaultValue={3} /> : null}
-          </label>
+          </div>
         ))}
         <button type="button" className="button">
           Submit check-in
