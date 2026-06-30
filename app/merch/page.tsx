@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Header } from "@/components/landing/header";
 import { Footer } from "@/components/landing/footer";
 
@@ -34,10 +35,10 @@ export default function MerchPage() {
               <p style={{ color: "rgba(255,255,255,.76)", margin: 0, fontSize: "1.1rem" }}>
                 BIC merch is a visible reminder that kingdom men are sharpened daily into the full image of Christ.
               </p>
-              <div className="scripture-lockup core-scripture-lockup" style={{ marginTop: 24, background: "transparent", borderColor: "rgba(255,255,255,0.1)", boxShadow: "none" }}>
-                <span className="eyebrow" style={{ color: "var(--gold)" }}>Proverbs 27:17 Core Scripture</span>
+              <div className="scripture-lockup core-scripture-lockup" style={{ marginTop: 24 }}>
+                <span className="eyebrow">Proverbs 27:17 Core Scripture</span>
                 <strong style={{ color: "#fff", marginTop: 8 }}>Iron sharpens iron.</strong>
-                <p style={{ color: "rgba(255,255,255,.76)", margin: "8px 0 0" }}>
+                <p style={{ margin: "8px 0 0" }}>
                   "As iron sharpens iron, so one man sharpens another."
                 </p>
               </div>
@@ -51,7 +52,7 @@ export default function MerchPage() {
               {merchItems.map((item) => (
                 <div className="card stack merch-card" key={item.name}>
                   <div className="merch-preview" aria-hidden>
-                    <span>BIC</span>
+                    <Image src="/logo.png" alt="BIC Logo Placeholder" width={100} height={100} style={{ objectFit: "contain", filter: "invert(1) opacity(0.8)" }} />
                   </div>
                   <div className="stack-sm">
                     <span className="eyebrow" style={{ color: "var(--gold)" }}>{item.price}</span>

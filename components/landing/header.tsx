@@ -22,13 +22,13 @@ export function Header() {
         <div className="space-between">
           <BrandMark />
           
-          <nav className="row hide-on-mobile" style={{ gap: 32 }}>
+          {/* <nav className="row hide-on-mobile" style={{ gap: 32, display: 'none' }}>
             <Link href="/" className="muted" style={{ fontWeight: 500 }}>Home</Link>
             <Link href="/levels" className="muted" style={{ fontWeight: 500 }}>Levels</Link>
             <Link href="/groups" className="muted" style={{ fontWeight: 500 }}>Groups</Link>
             <Link href="/community" className="muted" style={{ fontWeight: 500 }}>Community</Link>
             <Link href="/merch" className="muted" style={{ fontWeight: 500 }}>Merch</Link>
-          </nav>
+          </nav> */}
           
           <div className="row hide-on-mobile" style={{ gap: 24 }}>
             <Link href="/signin" style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "0.95rem" }}>

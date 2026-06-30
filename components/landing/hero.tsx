@@ -27,15 +27,10 @@ export function Hero() {
             </Link>
           </div>
 
-          <div className="scripture-lockup core-scripture-lockup" style={{
-            marginTop: 24,
-            background: "transparent",
-            borderColor: "rgba(255,255,255,0.1)",
-            boxShadow: "none"
-          }}>
-            <span className="eyebrow" style={{ color: "var(--gold)" }}>Proverbs 27:17 Core Scripture</span>
+          <div className="scripture-lockup core-scripture-lockup" style={{ marginTop: 24 }}>
+            <span className="eyebrow">Proverbs 27:17 Core Scripture</span>
             <strong style={{ color: "#fff", marginTop: 8 }}>Iron sharpens iron.</strong>
-            <p className="scripture-text" style={{ margin: "8px 0 0", color: "rgba(255,255,255,0.7)" }}>
+            <p className="scripture-text" style={{ margin: "8px 0 0" }}>
               "As iron sharpens iron, so one man sharpens another."
             </p>
           </div>

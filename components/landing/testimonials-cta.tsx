@@ -56,10 +56,10 @@ export function TestimonialsCTA() {
             <Link href="/signup" className="button">
               Join Brothers In Christ &rarr;
             </Link>
-            <Link href="/signin" className="button-secondary" style={{ color: "#fff", borderColor: "rgba(255,255,255,0.2)" }}>
+            <Link href="/signin" className="button-secondary">
               Explore the demo
             </Link>
-            <Link href="/merch" className="button-secondary" style={{ color: "#fff", borderColor: "rgba(255,255,255,0.2)" }}>
+            <Link href="/merch" className="button-secondary">
               View merch
             </Link>
           </div>

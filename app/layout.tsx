@@ -7,7 +7,10 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 
 export const metadata: Metadata = {
   title: "Brothers In Christ",
-  description: "A structured discipleship brotherhood for Christian men."
+  description: "A structured discipleship brotherhood for Christian men.",
+  icons: {
+    icon: "/logo.png"
+  }
 };
 
 export const viewport: Viewport = {

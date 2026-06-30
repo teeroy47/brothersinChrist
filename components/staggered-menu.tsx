@@ -190,7 +190,7 @@ export default function StaggeredMenu({
             
             <div style={{ marginTop: 40, borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 40 }}>
               <div className="row" style={{ gap: 16 }}>
-                <Link href="/signin" className="button-secondary" style={{ color: "#fff", borderColor: "rgba(255,255,255,0.2)" }} onClick={() => setIsOpen(false)}>
+                <Link href="/signin" className="button-secondary" onClick={() => setIsOpen(false)}>
                   Sign In
                 </Link>
                 <Link href="/signup" className="button" style={{ background: accentColor, color: "#000" }} onClick={() => setIsOpen(false)}>
