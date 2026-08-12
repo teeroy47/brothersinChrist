@@ -14,6 +14,9 @@ export default function LeaderPage() {
   if (!session) {
     return null;
   }
+  const weeklyReport = leaderReports[0];
+  const memberIdsNeedingFollowUp = weeklyReport?.memberIdsNeedingFollowUp ?? [];
+  const prayerNeeds = weeklyReport?.prayerNeeds ?? [];
 
   return (
     <LeaderGate>
@@ -29,7 +32,7 @@ export default function LeaderPage() {
       <div className="grid-2">
         <div className="card stack">
           <strong className="heading-md">Brothers needing attention</strong>
-          {leaderReports[0].memberIdsNeedingFollowUp.map((memberId) => {
+          {memberIdsNeedingFollowUp.length ? memberIdsNeedingFollowUp.map((memberId) => {
             const member = users.find((user) => user.id === memberId);
             return (
               <div key={memberId} className="metric stack-sm">
@@ -38,7 +41,7 @@ export default function LeaderPage() {
                 <span className="pill">Flag for follow-up</span>
               </div>
             );
-          })}
+          }) : <p className="muted" style={{ margin: 0 }}>No follow-up flags right now.</p>}
         </div>
         <div className="card stack">
           <strong className="heading-md">Check-in review</strong>
@@ -68,12 +71,12 @@ export default function LeaderPage() {
         </div>
         <div className="card stack">
           <strong className="heading-md">Prayer and support needs</strong>
-          {leaderReports[0].prayerNeeds.map((need) => (
+          {prayerNeeds.length ? prayerNeeds.map((need) => (
             <div key={need} className="metric stack-sm">
               <strong>{need}</strong>
               <span className="muted">Carry this into leader prayer and direct follow-up.</span>
             </div>
-          ))}
+          )) : <p className="muted" style={{ margin: 0 }}>No urgent prayer needs logged right now.</p>}
         </div>
       </div>
       </div>

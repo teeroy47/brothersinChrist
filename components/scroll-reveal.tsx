@@ -3,11 +3,19 @@
 import { useEffect } from "react";
 
 const revealSelector = [
-  ".section",
   ".card",
   ".metric",
   ".scripture-lockup",
-  ".merch-preview"
+  ".merch-preview",
+  ".landing-section-header",
+  ".landing-pillar",
+  ".landing-path-step",
+  ".landing-final-cta",
+  ".landing-footer",
+  ".landing-footer-brand",
+  ".landing-footer-links",
+  ".landing-footer-actions",
+  ".landing-footer-bottom"
 ].join(",");
 
 export function ScrollReveal() {
@@ -27,7 +35,7 @@ export function ScrollReveal() {
 
     targets.forEach((element, index) => {
       element.classList.add("reveal-on-scroll");
-      element.style.setProperty("--reveal-delay", `${Math.min(index % 4, 3) * 70}ms`);
+      element.style.setProperty("--reveal-delay", `${Math.min(index % 5, 4) * 95}ms`);
     });
 
     const observer = new IntersectionObserver(
@@ -40,8 +48,8 @@ export function ScrollReveal() {
         });
       },
       {
-        rootMargin: "0px 0px -8% 0px",
-        threshold: 0.12
+        rootMargin: "0px 0px -14% 0px",
+        threshold: 0.18
       }
     );
 
