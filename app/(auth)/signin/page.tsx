@@ -4,7 +4,7 @@ import { SignInForm } from "@/components/auth-forms";
 
 export default function SignInPage() {
   return (
-    <div className="stack">
+    <div className="auth-form-wrap stack">
       <SignInForm />
       <div className="row" style={{ justifyContent: "space-between" }}>
         <Link href="/forgot-password" className="muted">

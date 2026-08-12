@@ -2,13 +2,9 @@ import Link from "next/link";
 
 export function BrandMark({ compact = false }: { compact?: boolean }) {
   return (
-    <Link href="/" className="brand-mark" data-compact={compact ? "true" : undefined}>
+    <Link href="/" className="brand-mark brand-mark-logo-only" data-compact={compact ? "true" : undefined} aria-label="Brothers In Christ home">
       <div aria-hidden className="brand-mark-symbol">
-        <span>BIC</span>
-      </div>
-      <div className="stack-sm" style={{ gap: 2 }}>
-        <strong style={{ fontSize: compact ? "1rem" : "1.15rem" }}>Brothers In Christ</strong>
-        {!compact ? <span className="muted" style={{ fontSize: ".82rem" }}>Structured discipleship for Kingdom men</span> : null}
+        <img src="/assets/bic-emblem.png" alt="" className="brand-logo-image" />
       </div>
     </Link>
   );

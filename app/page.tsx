@@ -1,133 +1,108 @@
 import Link from "next/link";
+import { ArrowRight, BookOpenCheck, ClipboardCheck, Footprints, Home, LogIn, ShieldCheck, UsersRound } from "lucide-react";
 
-import { BrandMark } from "@/components/brand-mark";
-import { MetricCard, SectionHeader } from "@/components/cards";
-import { levels } from "@/lib/mock-data";
+import { BlurFade } from "@/components/blur-fade";
+import { BlurFadeText } from "@/components/blur-fade-text";
+import { HeroCarousel } from "@/components/hero-carousel";
+import { LandingNav } from "@/components/landing-nav";
+
+const missionPillars = [
+  { label: "Scripture", value: "Prayer, devotion, and accountability stay close to the Word.", Icon: BookOpenCheck },
+  { label: "Brotherhood", value: "Leaders can see the men, groups, and care rhythms entrusted to them.", Icon: UsersRound },
+  { label: "Order", value: "Check-ins, attendance, and follow-up become clear without losing spiritual weight.", Icon: ClipboardCheck }
+];
+
+const pathSteps = [
+  { step: "01", title: "Gather", detail: "Every brother enters a visible circle of care, prayer, and accountability." },
+  { step: "02", title: "Grow", detail: "Formation levels make the next faithful step simple to see and follow." },
+  { step: "03", title: "Lead", detail: "Mature men carry others with reports, follow-up, and consistent oversight." }
+];
 
 export default function LandingPage() {
   return (
     <>
-      <header className="container" style={{ padding: "20px 0" }}>
-        <div className="space-between">
-          <BrandMark />
-          <div className="row">
-            <Link href="/signin" className="pill">
-              Sign in
-            </Link>
-            <Link href="/signup" className="button">
-              Join BIC
-            </Link>
-          </div>
-        </div>
-      </header>
+      <LandingNav />
 
-      <main>
-        <section className="section">
-          <div className="container hero-grid">
-            <div className="stack" style={{ gap: 24 }}>
-              <span className="eyebrow">Kingdom men. Structured growth. Real accountability.</span>
-              <h1 className="heading-xl">A discipleship platform for men who intend to grow.</h1>
-              <p className="muted" style={{ fontSize: "1.05rem", maxWidth: 680, margin: 0 }}>
-                Brothers In Christ is a mobile-first brotherhood for levels, small groups, check-ins, attendance, teaching, and leader oversight. It is built for seriousness, not noise.
-              </p>
-              <div className="row">
-                <Link href="/signup" className="button">
-                  Start the journey
-                </Link>
-                <Link href="/signin" className="button-secondary">
-                  Open demo access
-                </Link>
+      <main className="landing-page">
+        <section id="home" className="landing-hero section">
+          <div className="container landing-hero-grid">
+            <HeroCarousel>
+              <div className="desktop-hero-copy">
+                <BlurFadeText as="h1" text="Iron sharpens iron." delay={0.18} stagger={0.92} duration={1.32} yOffset={10} blur="16px" />
+                <BlurFadeText as="p" text="As iron sharpens iron, so one man sharpens another. Proverbs 27:17" delay={3.02} stagger={0.08} duration={0.72} yOffset={4} blur="7px" />
+                <BlurFade delay={3.38} duration={0.9} yOffset={5} blur="8px">
+                  <Link href="/signup" className="button landing-primary-cta desktop-hero-cta">
+                    Join
+                  </Link>
+                </BlurFade>
               </div>
-              <div className="scripture-lockup core-scripture-lockup">
+            </HeroCarousel>
+
+            <div className="stack landing-hero-copy mobile-hero-copy">
+              <BlurFadeText as="h1" text="Iron sharpens iron." className="landing-title" delay={0.18} stagger={0.92} duration={1.32} yOffset={10} blur="16px" />
+              <BlurFadeText as="p" text="As iron sharpens iron, so one man sharpens another." className="landing-lede" delay={3.08} stagger={0.08} duration={0.72} yOffset={4} blur="7px" />
+              <BlurFade delay={3.82} duration={0.72} yOffset={4} blur="6px">
                 <span className="eyebrow">Proverbs 27:17 Core Scripture</span>
-                <strong>Iron sharpens iron.</strong>
-                <p className="muted scripture-text" style={{ margin: "8px 0 0" }}>
-                  "As iron sharpens iron, so one man sharpens another."
-                </p>
-              </div>
-            </div>
-
-            <div className="card card-dark stack">
-              <span className="eyebrow" style={{ color: "rgba(255,255,255,.65)" }}>What the brotherhood answers</span>
-              <div className="stack-sm">
-                <strong className="heading-md">Where do I belong?</strong>
-                <span style={{ color: "rgba(255,255,255,.72)" }}>Every brother has a level, a group, and visible leadership covering.</span>
-              </div>
-              <div className="stack-sm">
-                <strong className="heading-md">What should I do this week?</strong>
-                <span style={{ color: "rgba(255,255,255,.72)" }}>Daily dashboard cards keep prayer, teaching, attendance, and check-ins clear.</span>
-              </div>
-              <div className="stack-sm">
-                <strong className="heading-md">Who is checking on me?</strong>
-                <span style={{ color: "rgba(255,255,255,.72)" }}>Leaders monitor consistency, follow-up needs, and prayer burdens without turning this into social media.</span>
-              </div>
+              </BlurFade>
+              <BlurFade delay={4.02} duration={0.76} yOffset={4} blur="6px">
+                <div className="landing-cta-row">
+                  <Link href="/signup" className="button landing-primary-cta">
+                    Join
+                  </Link>
+                </div>
+              </BlurFade>
             </div>
           </div>
         </section>
 
-        <section className="section">
-          <div className="container stack">
-            <SectionHeader
-              eyebrow="Vision & Mission"
-              title="A global brotherhood sharpened into Christ."
-              body="Brothers In Christ exists to form kingdom men who reflect Jesus Christ in daily obedience, brotherhood, discipline, and lasting fruit."
-            />
-            <div className="grid-2">
-              <div className="card mission-card stack-sm">
-                <span className="eyebrow">Vision</span>
-                <strong className="heading-md">To build a global brotherhood of kingdom men who reflect Jesus Christ and bear lasting fruit.</strong>
-              </div>
-              <div className="card mission-card stack-sm">
-                <span className="eyebrow">Mission</span>
-                <strong className="heading-md">To sharpen each other daily into the full image of Christ.</strong>
-              </div>
+        <section id="mission" className="section landing-band">
+          <div className="container landing-mission">
+            <div className="landing-section-header">
+              <span className="eyebrow">Mission</span>
+              <h2 className="heading-lg">God's work can be spiritually alive and beautifully organized.</h2>
+              <p className="muted">
+                Brothers In Christ brings the visible work of discipleship into one calm place: men, prayer, Scripture, care, attendance, and follow-up.
+              </p>
+              <Link href="/signup" className="button landing-primary-cta landing-inline-cta">
+                Join
+                <ArrowRight aria-hidden="true" size={18} strokeWidth={2.2} />
+              </Link>
             </div>
-            <div className="grid-4">
-              <MetricCard label="God" value="Prayer + Word" detail="Daily devotion, theology, obedience, Scripture memory." tone="strong" />
-              <MetricCard label="Mind" value="Renewal" detail="Truth-shaped thinking, emotional maturity, consistency." />
-              <MetricCard label="Body" value="Discipline" detail="Health, strength, restraint, embodied stewardship." />
-              <MetricCard label="Life" value="Leadership" detail="Responsibility, service, accountability, discipleship." />
+
+            <div className="landing-pillar-list">
+              {missionPillars.map(({ label, value, Icon }) => (
+                <div key={label} className="landing-pillar">
+                  <span className="landing-pillar-icon" aria-hidden="true">
+                    <Icon size={22} strokeWidth={2.1} />
+                  </span>
+                  <div>
+                    <strong>{label}</strong>
+                    <p>{value}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        <section className="section">
+        <section id="path" className="section">
           <div className="container stack">
-            <SectionHeader
-              eyebrow="How it works"
-              title="Simple workflows that support real ministry."
-              body="Join the brotherhood, enter a level, stay connected to a small group, submit a weekly check-in, attend meetings, and grow under visible leadership."
-            />
-            <div className="grid-3">
-              <div className="card stack-sm">
-                <strong className="heading-md">1. Belong</strong>
-                <p className="muted" style={{ margin: 0 }}>Each man is placed in a level and small group, with accountability and leader coverage from day one.</p>
-              </div>
-              <div className="card stack-sm">
-                <strong className="heading-md">2. Engage</strong>
-                <p className="muted" style={{ margin: 0 }}>Check-ins, teachings, group activity, and attendance tracking make growth tangible without overcomplication.</p>
-              </div>
-              <div className="card stack-sm">
-                <strong className="heading-md">3. Mature</strong>
-                <p className="muted" style={{ margin: 0 }}>Progress markers and leader oversight help men move toward service, leadership, and multiplication.</p>
-              </div>
+            <div className="landing-section-header">
+              <span className="eyebrow">Path</span>
+              <h2 className="heading-lg">A simple formation path for men who want to grow steadily.</h2>
+              <p className="muted">
+                The console keeps the journey legible without turning discipleship into noise.
+              </p>
             </div>
-          </div>
-        </section>
 
-        <section className="section">
-          <div className="container stack">
-            <SectionHeader
-              eyebrow="Levels"
-              title="A meaningful progression, not a game."
-              body="Every level names expectations, growth markers, and curriculum so brothers know what maturity looks like."
-            />
-            <div className="grid-3">
-              {levels.map((level) => (
-                <div key={level.id} className="card stack-sm">
-                  <span className="eyebrow">{level.id.replace("-", " ")}</span>
-                  <strong className="heading-md">{level.title}</strong>
-                  <p className="muted" style={{ margin: 0 }}>{level.description}</p>
+            <div className="landing-path-list">
+              {pathSteps.map((item) => (
+                <div key={item.step} className="landing-path-step">
+                  <span>{item.step}</span>
+                  <div>
+                    <strong>{item.title}</strong>
+                    <p>{item.detail}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -135,59 +110,62 @@ export default function LandingPage() {
         </section>
 
         <section className="section">
-          <div className="container grid-2">
-            <div className="card stack">
-              <SectionHeader
-                eyebrow="Small groups"
-                title="Brotherhood is carried by real relationships."
-                body="The group space supports weekly check-ins, prayer requests, encouragement, attendance history, and a view of who needs follow-up."
-              />
-            </div>
-            <div className="card stack">
-              <SectionHeader
-                eyebrow="Why accountability matters"
-                title="Men grow faster when someone is close enough to ask the hard questions."
-                body="BIC keeps accountability direct, private, and spiritually useful without turning it into surveillance."
-              />
-            </div>
-          </div>
-        </section>
-
-        <section className="section">
-          <div className="container grid-2">
-            <div className="card card-dark stack">
-              <span className="eyebrow" style={{ color: "rgba(255,255,255,.65)" }}>Testimonials</span>
-              <h2 className="heading-lg">Placeholder for brotherhood testimonies</h2>
-              <p style={{ color: "rgba(255,255,255,.76)", margin: 0 }}>
-                Use this section for real stories from men whose prayer, discipline, leadership, and brotherhood life have deepened through BIC.
-              </p>
-            </div>
-            <div className="card stack">
-              <SectionHeader
-                eyebrow="Call to action"
-                title="Enter a serious discipleship environment."
-                body="This is not just a community. It is a brotherhood for building strong Kingdom men in a clear, accountable way."
-              />
-              <div className="row">
-                <Link href="/signup" className="button">
-                  Join Brothers In Christ
-                </Link>
-                <Link href="/signin" className="button-secondary">
-                  Explore the demo
-                </Link>
-                <Link href="/merch" className="button-secondary">
-                  View merch
-                </Link>
-              </div>
+          <div className="container landing-final-cta">
+            <span className="eyebrow">Enter the console</span>
+            <h2 className="heading-lg">Bring clarity to the work God has entrusted to the brotherhood.</h2>
+            <p className="muted">
+              Start with demo access or create a profile and move into a structured discipleship environment built for serious men.
+            </p>
+            <div className="landing-cta-row">
+              <Link href="/signup" className="button landing-primary-cta">
+                Join
+              </Link>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="container" style={{ padding: "24px 0 48px" }}>
-        <div className="space-between">
-          <span className="muted">Brothers In Christ. Kingdom-focused discipleship for men.</span>
-          <span className="muted">Home - Levels - Groups - Community - Merch - Profile</span>
+      <footer className="landing-footer">
+        <div className="container landing-footer-inner">
+          <div className="landing-footer-brand">
+            <div className="landing-footer-mark" aria-hidden="true">
+              <img src="/assets/bic-emblem.png" alt="" />
+            </div>
+            <div>
+              <strong>Brothers In Christ</strong>
+              <p>Structured discipleship for Kingdom men.</p>
+            </div>
+          </div>
+
+          <nav className="landing-footer-links" aria-label="Footer navigation">
+            <Link href="#home">
+              <Home aria-hidden="true" size={17} strokeWidth={2.2} />
+              Home
+            </Link>
+            <Link href="#mission">
+              <ShieldCheck aria-hidden="true" size={17} strokeWidth={2.2} />
+              Mission
+            </Link>
+            <Link href="#path">
+              <Footprints aria-hidden="true" size={17} strokeWidth={2.2} />
+              Path
+            </Link>
+          </nav>
+
+          <div className="landing-footer-actions">
+            <Link href="/signin" className="pill landing-footer-console">
+              <LogIn aria-hidden="true" size={17} strokeWidth={2.2} />
+              Login
+            </Link>
+            <Link href="/signup" className="button landing-primary-cta">
+              Join
+            </Link>
+          </div>
+        </div>
+
+        <div className="container landing-footer-bottom">
+          <span>Proverbs 27:17 Core Scripture</span>
+          <span>Brothers In Christ. All stewardship belongs to God.</span>
         </div>
       </footer>
     </>
