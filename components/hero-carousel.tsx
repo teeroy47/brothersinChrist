@@ -4,6 +4,8 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 
+import { withBasePath } from "@/lib/paths";
+
 const slides = [
   {
     src: "/assets/brothers-outdoors.jpeg",
@@ -39,7 +41,7 @@ export function HeroCarousel({ children }: { children?: ReactNode }) {
           {slides.map((slide, index) => (
             <div key={slide.src} className="hero-carousel-slide" data-active={index === activeIndex ? "true" : undefined} aria-hidden={index !== activeIndex}>
               <Image
-                src={slide.src}
+                src={withBasePath(slide.src)}
                 alt={slide.alt}
                 fill
                 priority={index === 0}

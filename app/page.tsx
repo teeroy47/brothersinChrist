@@ -5,6 +5,7 @@ import { BlurFade } from "@/components/blur-fade";
 import { BlurFadeText } from "@/components/blur-fade-text";
 import { HeroCarousel } from "@/components/hero-carousel";
 import { LandingNav } from "@/components/landing-nav";
+import { withBasePath } from "@/lib/paths";
 
 const missionPillars = [
   { label: "Scripture", value: "Prayer, devotion, and accountability stay close to the Word.", Icon: BookOpenCheck },
@@ -129,7 +130,7 @@ export default function LandingPage() {
         <div className="container landing-footer-inner">
           <div className="landing-footer-brand">
             <div className="landing-footer-mark" aria-hidden="true">
-              <img src="/assets/bic-emblem.png" alt="" />
+              <img src={withBasePath("/assets/bic-emblem.png")} alt="" />
             </div>
             <div>
               <strong>Brothers In Christ</strong>

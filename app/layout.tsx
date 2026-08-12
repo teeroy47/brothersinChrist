@@ -4,16 +4,17 @@ import type { Metadata, Viewport } from "next";
 import "@/app/globals.css";
 import { SessionProvider } from "@/components/session-provider";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { withBasePath } from "@/lib/paths";
 
 export const metadata: Metadata = {
   title: "Brothers In Christ",
   description: "A structured discipleship brotherhood for Christian men.",
   icons: {
     icon: [
-      { url: "/icon.png", sizes: "512x512", type: "image/png" }
+      { url: withBasePath("/icon.png"), sizes: "512x512", type: "image/png" }
     ],
     apple: [
-      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" }
+      { url: withBasePath("/apple-icon.png"), sizes: "180x180", type: "image/png" }
     ]
   }
 };
