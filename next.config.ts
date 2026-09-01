@@ -12,7 +12,16 @@ const nextConfig: NextConfig = {
     unoptimized: true
   },
   basePath,
-  assetPrefix: basePath || undefined
+  assetPrefix: basePath || undefined,
+  allowedDevOrigins: [
+    "192.168.1.36",
+    "192.168.*.*",
+    "10.*.*.*",
+    "172.*.*.*",
+    "127.0.0.1",
+    "*.local",
+    "*.lan"
+  ]
 };
 
 export default nextConfig;

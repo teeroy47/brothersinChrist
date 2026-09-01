@@ -3,11 +3,34 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import type { LucideIcon } from "lucide-react";
+import {
+  Home,
+  Layers,
+  UsersRound,
+  MessageSquare,
+  ShoppingBag,
+  User,
+  ShieldCheck,
+  Settings,
+  LogOut
+} from "lucide-react";
 
 import { BrandMark } from "@/components/brand-mark";
 import { useDemoSession } from "@/components/session-provider";
 import { getMainNavigation } from "@/lib/navigation";
 import type { Role, SessionUser } from "@/lib/types";
+
+const navIcons: Record<string, LucideIcon> = {
+  "/home": Home,
+  "/levels": Layers,
+  "/groups": UsersRound,
+  "/community": MessageSquare,
+  "/merch": ShoppingBag,
+  "/profile": User,
+  "/leader": ShieldCheck,
+  "/admin": Settings
+};
 
 export function AppShell({
   session,
@@ -29,59 +52,82 @@ export function AppShell({
     <div className="nav-shell">
       <aside className="sidebar">
         <BrandMark compact />
-        <div className="card card-dark stack-sm">
-          <span className="eyebrow" style={{ color: "rgba(255,255,255,.65)" }}>Signed in as</span>
-          <strong>{session.name}</strong>
-          <span style={{ color: "rgba(255,255,255,.7)", textTransform: "capitalize" }}>{formatRoleLabel(session.role)}</span>
-        </div>
-        <nav className="stack-sm">
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="pill"
-              aria-current={pathname === item.href ? "page" : undefined}
-              style={pathname === item.href ? { borderColor: "#000", fontWeight: 700 } : undefined}
-            >
-              {item.label}
-            </Link>
-          ))}
+
+        {/* Nav is the primary content of the sidebar now */}
+        <nav className="sidebar-nav" aria-label="Sidebar navigation">
+          {nav.map((item) => {
+            const Icon = navIcons[item.href] ?? Home;
+            const active = pathname === item.href || (item.href !== "/home" && pathname?.startsWith(`${item.href}/`));
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="nav-link"
+                aria-current={active ? "page" : undefined}
+                data-active={active || undefined}
+              >
+                <span className="nav-link-icon" aria-hidden="true">
+                  <Icon size={18} strokeWidth={active ? 2.4 : 2} />
+                </span>
+                <span className="nav-link-label">{item.label}</span>
+              </Link>
+            );
+          })}
         </nav>
-        <button
-          type="button"
-          className="button-secondary"
-          style={{ width: "100%" }}
-          onClick={() => {
-            signOut();
-            router.push("/");
-          }}
-        >
-          Sign out
-        </button>
+
+        {/* Identity + sign out live together at the bottom */}
+        <div className="sidebar-account">
+          <div className="sidebar-account-info">
+            <strong className="sidebar-account-name">{session.name}</strong>
+            <span className="sidebar-account-role">{formatRoleLabel(session.role)}</span>
+          </div>
+          <button
+            type="button"
+            className="sidebar-account-signout"
+            onClick={() => {
+              signOut();
+              router.push("/");
+            }}
+            title="Sign out"
+            aria-label="Sign out"
+          >
+            <LogOut size={14} strokeWidth={2.2} aria-hidden="true" />
+            <span>Sign out</span>
+          </button>
+        </div>
       </aside>
 
       <div className="app-main">
         <div className="container">
-          <header className="topbar stack-sm">
-            <span className="eyebrow">Brothers In Christ</span>
-            <div className="space-between">
-              <div className="stack-sm" style={{ gap: 6 }}>
-                <h1 className="heading-lg">{title}</h1>
-                {subtitle ? <p className="muted" style={{ margin: 0 }}>{subtitle}</p> : null}
-              </div>
-              <span className="pill">{formatRoleLabel(session.role)}</span>
-            </div>
+          <header className="topbar">
+            <h1 className="heading-lg">{title}</h1>
+            {subtitle ? <p className="muted topbar-subtitle">{subtitle}</p> : null}
           </header>
           {children}
         </div>
       </div>
 
-      <nav className="mobile-nav">
-        {nav.slice(0, 5).map((item) => (
-          <Link key={item.href} href={item.href} data-active={pathname === item.href}>
-            {item.label}
-          </Link>
-        ))}
+      <nav className="mobile-nav" aria-label="Mobile navigation">
+        {nav.slice(0, 5).map((item) => {
+          const Icon = navIcons[item.href] ?? Home;
+          const active = pathname === item.href || (item.href !== "/home" && pathname?.startsWith(`${item.href}/`));
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="mobile-nav-link"
+              aria-current={active ? "page" : undefined}
+              data-active={active || undefined}
+            >
+              <span className="mobile-nav-icon" aria-hidden="true">
+                <Icon size={18} strokeWidth={active ? 2.4 : 2} />
+              </span>
+              <span className="mobile-nav-label">{item.label}</span>
+            </Link>
+          );
+        })}
       </nav>
     </div>
   );
