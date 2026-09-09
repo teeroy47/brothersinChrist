@@ -1,7 +1,13 @@
 export type Role = "member" | "group_leader" | "level_leader" | "admin";
 
 export type LevelId = "level-1" | "level-2" | "level-3" | "level-4" | "level-5";
-export type PostType = "Teaching" | "Testimony" | "Announcement" | "Question" | "Accountability Prompt" | "Devotion";
+export type PostType =
+  | "Teaching"
+  | "Testimony"
+  | "Announcement"
+  | "Question"
+  | "Accountability Prompt"
+  | "Devotion";
 export type AttendanceStatus = "present" | "absent" | "excused" | "late";
 
 export interface AuditFields {
@@ -65,7 +71,12 @@ export interface Event extends AuditFields {
   id: string;
   title: string;
   when: string;
-  category: "Monday Meeting" | "Thursday Meeting" | "Group Gathering" | "Special Session" | "Physical Event";
+  category:
+    | "Monday Meeting"
+    | "Thursday Meeting"
+    | "Group Gathering"
+    | "Special Session"
+    | "Physical Event";
   audience: "all" | "level" | "group" | "leaders";
   groupId?: string;
   levelId?: LevelId;
@@ -145,4 +156,29 @@ export interface SessionUser {
   id: string;
   name: string;
   role: Role;
+}
+// --- 4 Pillars & Daily Practices ---
+export type HabitPillar = "god" | "mind" | "body" | "life";
+
+export interface DailyHabitItem {
+  id: string;
+  pillar: HabitPillar;
+  title: string;
+  description: string;
+}
+
+export interface DailyPracticeRecord extends AuditFields {
+  id: string;
+  userId: string;
+  date: string; // YYYY-MM-DD
+  completedHabitIds: string[];
+  reflection?: string;
+}
+
+export interface PartnerSyncRecord extends AuditFields {
+  id: string;
+  userId: string;
+  partnerId: string;
+  syncedAt: string;
+  note?: string;
 }
