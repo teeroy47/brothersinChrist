@@ -127,46 +127,89 @@ export default function LandingPage() {
       </main>
 
       <footer className="landing-footer">
-        <div className="container landing-footer-inner">
-          <div className="landing-footer-brand">
-            <div className="landing-footer-mark" aria-hidden="true">
-              <img src={withBasePath("/assets/bic-emblem.png")} alt="" />
+        <div className="container">
+          <div className="landing-footer-main">
+            {/* Brand */}
+            <div className="landing-footer-brand">
+              <div className="landing-footer-mark" aria-hidden="true">
+                <img src={withBasePath("/assets/bic-emblem.png")} alt="" />
+              </div>
+
+              <div className="landing-footer-brand-copy">
+                <strong>Brothers In Christ</strong>
+                <p>Structured discipleship for Kingdom men.</p>
+              </div>
             </div>
-            <div>
-              <strong>Brothers In Christ</strong>
-              <p>Structured discipleship for Kingdom men.</p>
+
+            {/* Navigation */}
+            <nav
+              className="landing-footer-nav"
+              aria-label="Footer navigation"
+            >
+              <span className="landing-footer-label">Explore</span>
+
+              <div className="landing-footer-links">
+                <Link href="#home">
+                  <Home aria-hidden="true" size={16} strokeWidth={2.2} />
+                  <span>Home</span>
+                </Link>
+
+                <Link href="#mission">
+                  <ShieldCheck aria-hidden="true" size={16} strokeWidth={2.2} />
+                  <span>Mission</span>
+                </Link>
+
+                <Link href="#path">
+                  <Footprints aria-hidden="true" size={16} strokeWidth={2.2} />
+                  <span>Our Path</span>
+                </Link>
+              </div>
+            </nav>
+
+            {/* Actions */}
+            <div className="landing-footer-actions">
+              <span className="landing-footer-label">Your Journey</span>
+
+              <div className="landing-footer-buttons">
+                <Link href="/signin" className="pill landing-footer-console">
+                  <LogIn aria-hidden="true" size={16} strokeWidth={2.2} />
+                  Login
+                </Link>
+
+                <Link href="/signup" className="button landing-primary-cta">
+                  Join Brothers In Christ
+                </Link>
+              </div>
             </div>
           </div>
 
-          <nav className="landing-footer-links" aria-label="Footer navigation">
-            <Link href="#home">
-              <Home aria-hidden="true" size={17} strokeWidth={2.2} />
-              Home
-            </Link>
-            <Link href="#mission">
-              <ShieldCheck aria-hidden="true" size={17} strokeWidth={2.2} />
-              Mission
-            </Link>
-            <Link href="#path">
-              <Footprints aria-hidden="true" size={17} strokeWidth={2.2} />
-              Path
-            </Link>
-          </nav>
+          {/* Scripture */}
+          <div className="landing-footer-scripture">
+            <div className="landing-footer-scripture-line" />
 
-          <div className="landing-footer-actions">
-            <Link href="/signin" className="pill landing-footer-console">
-              <LogIn aria-hidden="true" size={17} strokeWidth={2.2} />
-              Login
-            </Link>
-            <Link href="/signup" className="button landing-primary-cta">
-              Join
-            </Link>
+            <div className="landing-footer-scripture-content">
+              <span className="landing-footer-scripture-reference">
+                Proverbs 27:17
+              </span>
+
+              <span className="landing-footer-scripture-text">
+                “As iron sharpens iron, so one person sharpens another.”
+              </span>
+            </div>
+
+            <div className="landing-footer-scripture-line" />
           </div>
-        </div>
 
-        <div className="container landing-footer-bottom">
-          <span>Proverbs 27:17 Core Scripture</span>
-          <span>Brothers In Christ. All stewardship belongs to God.</span>
+          {/* Bottom */}
+          <div className="landing-footer-bottom">
+            <span>
+              © {new Date().getFullYear()} Brothers In Christ
+            </span>
+
+            <span>
+              All stewardship belongs to God.
+            </span>
+          </div>
         </div>
       </footer>
     </>
