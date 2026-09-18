@@ -38,6 +38,9 @@ export function LandingNav() {
         </nav>
 
         <div className="landing-header-actions">
+          <Link href="/signin" className="pill">
+            Sign In
+          </Link>
           <Link href="/signup" className="button landing-join-link">
             Join
           </Link>
@@ -66,7 +69,13 @@ export function LandingNav() {
                 {label}
               </Link>
             ))}
-            <Link href="/signup" style={{ "--i": menuLinks.length } as CSSProperties} tabIndex={open ? undefined : -1} onClick={() => setOpen(false)}>
+            <Link href="/signin" style={{ "--i": menuLinks.length } as CSSProperties} tabIndex={open ? undefined : -1} onClick={() => setOpen(false)}>
+              <span className="chm-26__link-icon" aria-hidden="true">
+                <ShieldCheck size={18} strokeWidth={2.2} />
+              </span>
+              Sign In
+            </Link>
+            <Link href="/signup" style={{ "--i": menuLinks.length + 1 } as CSSProperties} tabIndex={open ? undefined : -1} onClick={() => setOpen(false)}>
               <span className="chm-26__link-icon" aria-hidden="true">
                 <ArrowRight size={18} strokeWidth={2.2} />
               </span>

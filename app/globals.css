@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --background: #e9edf3;
   --foreground: #17202f;
@@ -10,6 +12,7 @@
   --accent-strong: #125444;
   --radius: 26px;
   --radius-sm: 18px;
+  --radius-flat: 0px;
   --shadow: -10px -10px 22px rgba(255, 255, 255, 0.85), 10px 10px 24px rgba(136, 151, 172, 0.36);
   --shadow-strong: -16px -16px 36px rgba(255, 255, 255, 0.9), 18px 18px 38px rgba(125, 141, 165, 0.42);
   --shadow-inset: inset -7px -7px 14px rgba(255, 255, 255, 0.86), inset 7px 7px 14px rgba(130, 146, 170, 0.32);
@@ -118,21 +121,72 @@ main {
   overflow-wrap: anywhere;
 }
 
-.card-dark {
+.card-floating {
+  background: rgba(233, 237, 243, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-strong);
+  padding: clamp(20px, 3.5vw, 28px);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.section-flat {
+  background: rgba(233, 237, 243, 0.5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-flat, 0px);
+  box-shadow: none;
+  padding: clamp(18px, 3vw, 24px);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.section-flat-dark {
   background:
-    linear-gradient(145deg, rgba(182, 139, 53, 0.22), transparent 38%),
-    #172033;
+    linear-gradient(145deg, rgba(182, 139, 53, 0.18), transparent 38%),
+    #162033;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: -12px -12px 26px rgba(255, 255, 255, 0.2), 14px 14px 30px rgba(93, 108, 132, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-flat, 0px);
+  box-shadow: none;
+  padding: clamp(20px, 3vw, 26px);
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-size: 0.72rem;
+  font-weight: 700;
   color: var(--muted);
   line-height: 1.45;
+}
+
+/* Data type scale */
+.data-value {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.08;
+  font-variant-numeric: tabular-nums;
+  color: var(--foreground);
+  letter-spacing: -0.02em;
+}
+
+.data-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.data-detail {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--muted);
+  line-height: 1.35;
 }
 
 .heading-xl {

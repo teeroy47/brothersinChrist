@@ -1,0 +1,290 @@
+// Brothers In Christ (BIC) - Prisma Schema
+// PostgreSQL (Local / pgAdmin 4) & Supabase Compatible
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  MEMBER
+  GROUP_LEADER
+  LEVEL_LEADER
+  ADMIN
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  EXCUSED
+  LATE
+}
+
+enum GroupRole {
+  MEMBER
+  LEADER
+  CO_LEADER
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  NEEDS_FOLLOW_UP
+}
+
+// -----------------------------------------------------------------------------
+// 1. Identity Domain
+// -----------------------------------------------------------------------------
+
+model User {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email           String    @unique
+  passwordHash    String?
+  role            Role      @default(MEMBER)
+  currentLevelId  String?   @db.Uuid
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  profile               Profile?
+  currentLevel          Level?                  @relation(fields: [currentLevelId], references: [id])
+  memberships           GroupMember[]
+  ledGroups             Group[]                 @relation("GroupLeader")
+  checkIns              CheckIn[]
+  attendances           Attendance[]
+  growthScore           GrowthScore?
+  partnersAsUser1       AccountabilityPartner[] @relation("User1Partners")
+  partnersAsUser2       AccountabilityPartner[] @relation("User2Partners")
+  leaderReports         LeaderReport[]
+  userLevelReviews      LevelReview[]           @relation("UserLevelReviews")
+  reviewerLevelReviews  LevelReview[]           @relation("ReviewerLevelReviews")
+
+  @@map("users")
+}
+
+model Profile {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId          String    @unique @db.Uuid
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName        String
+  firstName       String
+  phone           String?
+  city            String?
+  ageRange        String?
+  church          String?
+  occupation      String?
+  maritalStatus   String?
+  testimony       String?   @db.Text
+  spiritualGoals  String[]  @default([])
+  fitnessGoals    String[]  @default([])
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("profiles")
+}
+
+// -----------------------------------------------------------------------------
+// 2. Discipleship Domain
+// -----------------------------------------------------------------------------
+
+model Level {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  levelNumber   Int           @unique
+  title         String
+  description   String        @db.Text
+  requirements  String[]      @default([])
+  expectations  String[]      @default([])
+  curriculum    String[]      @default([])
+  growthMarkers String[]      @default([])
+  meetings      String[]      @default([])
+  users         User[]
+  levelReviews  LevelReview[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("levels")
+}
+
+model CheckIn {
+  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId              String    @db.Uuid
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekLabel           String
+  prayerDays          Int       @default(0)
+  bibleDays           Int       @default(0)
+  attendedMeeting     Boolean   @default(false)
+  metAccountability   Boolean   @default(false)
+  servingContribution String?   @db.Text
+  strugglesAndNeeds   String?   @db.Text
+  praiseReport        String?   @db.Text
+  flags               String[]  @default([])
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@map("check_ins")
+}
+
+model ReadingPlan {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String
+  description String      @db.Text
+  daysTotal   Int         @default(30)
+  devotions   Devotion[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("reading_plans")
+}
+
+model Devotion {
+  id                  String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  planId              String      @db.Uuid
+  plan                ReadingPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  dayNumber           Int
+  title               String
+  scriptureReference  String
+  passageText         String      @db.Text
+  reflection          String      @db.Text
+  prayerFocus         String      @db.Text
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  @@unique([planId, dayNumber])
+  @@map("devotions")
+}
+
+// -----------------------------------------------------------------------------
+// 3. Community Domain
+// -----------------------------------------------------------------------------
+
+model Group {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String
+  summary         String        @db.Text
+  leaderId        String        @db.Uuid
+  leader          User          @relation("GroupLeader", fields: [leaderId], references: [id])
+  nextMeeting     DateTime?
+  prayerRequests  String[]      @default([])
+  encouragements  String[]      @default([])
+  members         GroupMember[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@map("groups")
+}
+
+model GroupMember {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  groupId   String    @db.Uuid
+  group     Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId    String    @db.Uuid
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      GroupRole @default(MEMBER)
+  joinedAt  DateTime  @default(now())
+
+  @@unique([groupId, userId])
+  @@map("group_members")
+}
+
+model AccountabilityPartner {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user1Id       String    @db.Uuid
+  user1         User      @relation("User1Partners", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2Id       String    @db.Uuid
+  user2         User      @relation("User2Partners", fields: [user2Id], references: [id], onDelete: Cascade)
+  status        String    @default("active")
+  establishedAt DateTime  @default(now())
+
+  @@unique([user1Id, user2Id])
+  @@map("accountability_partners")
+}
+
+// -----------------------------------------------------------------------------
+// 4. Engagement Domain
+// -----------------------------------------------------------------------------
+
+model Event {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String
+  category    String
+  audience    String        @default("all")
+  location    String
+  dateTime    DateTime
+  attendances Attendance[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("events")
+}
+
+model Attendance {
+  id        String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String            @db.Uuid
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventId   String            @db.Uuid
+  event     Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  status    AttendanceStatus  @default(PRESENT)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@unique([userId, eventId])
+  @@map("attendance")
+}
+
+// -----------------------------------------------------------------------------
+// 5. Growth Domain
+// -----------------------------------------------------------------------------
+
+model GrowthScore {
+  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId              String    @unique @db.Uuid
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  overallConsistency  Int       @default(0)
+  prayerScore         Int       @default(0)
+  bibleScore          Int       @default(0)
+  attendanceScore     Int       @default(0)
+  servingScore        Int       @default(0)
+  accountabilityScore Int       @default(0)
+  recentActivity      String?
+  updatedAt           DateTime  @updatedAt
+
+  @@map("growth_scores")
+}
+
+// -----------------------------------------------------------------------------
+// 6. Leadership Domain
+// -----------------------------------------------------------------------------
+
+model LeaderReport {
+  id                        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  leaderId                  String    @db.Uuid
+  leader                    User      @relation(fields: [leaderId], references: [id])
+  title                     String
+  summary                   String    @db.Text
+  prayerNeeds               String[]  @default([])
+  memberIdsNeedingFollowUp  String[]  @default([])
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+
+  @@map("leader_reports")
+}
+
+model LevelReview {
+  id                String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String        @db.Uuid
+  user              User          @relation("UserLevelReviews", fields: [userId], references: [id], onDelete: Cascade)
+  reviewerId        String        @db.Uuid
+  reviewer          User          @relation("ReviewerLevelReviews", fields: [reviewerId], references: [id])
+  targetLevelId     String        @db.Uuid
+  targetLevel       Level         @relation(fields: [targetLevelId], references: [id])
+  status            ReviewStatus  @default(PENDING)
+  feedback          String        @db.Text
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@map("level_reviews")
+}

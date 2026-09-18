@@ -32,6 +32,10 @@ const navIcons: Record<string, LucideIcon> = {
   "/admin": Settings
 };
 
+/**
+ * @deprecated Per design.md §4.1, AppShell is deprecated in favor of PortalShell (`src/components/portal/PortalShell.tsx`).
+ * PortalShell unifies desktop sidebar, mobile bottom dock, and cross-portal accent consistency.
+ */
 export function AppShell({
   session,
   children,

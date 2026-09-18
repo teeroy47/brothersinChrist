@@ -19,19 +19,26 @@ export function MetricCard({
   label: string;
   value: string;
   detail: string;
-  tone?: "steady" | "warning" | "strong";
+  tone?: "steady" | "warning" | "healthy" | "strong";
 }) {
   return (
     <div className="card stack-sm">
-      <span className="eyebrow">{label}</span>
-      <strong className="heading-md">{value}</strong>
-      <span className="muted">{detail}</span>
+      <span className="data-label">{label}</span>
+      <strong className="data-value">{value}</strong>
+      <span className="data-detail">{detail}</span>
       <div
         style={{
-          width: 12,
-          height: 12,
+          width: 10,
+          height: 10,
           borderRadius: "50%",
-          background: tone === "warning" ? "var(--gold)" : tone === "strong" ? "#000" : "#6b7280"
+          background:
+            tone === "healthy"
+              ? "var(--accent)"
+              : tone === "warning"
+              ? "var(--gold)"
+              : tone === "strong"
+              ? "var(--foreground)"
+              : "var(--muted)"
         }}
       />
     </div>
