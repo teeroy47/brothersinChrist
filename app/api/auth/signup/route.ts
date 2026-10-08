@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { Role } from "@prisma/client";
 import { db } from "@/src/lib/db";
 import { hashPassword } from "@/src/lib/auth-server";
 
@@ -38,7 +37,7 @@ export async function POST(req: Request) {
       db.level.findUnique({ where: { levelNumber: 5 } }),
     ]);
 
-    const role = isFirstUser ? Role.ADMIN : Role.MEMBER;
+    const roleId = isFirstUser ? 40 : 10; // 40 = ADMIN, 10 = MEMBER
     const currentLevel = isFirstUser ? level5 ?? level1 : level1;
     const currentLevelId = currentLevel?.id ?? null;
 
@@ -51,7 +50,7 @@ export async function POST(req: Request) {
       data: {
         email: normalizedEmail,
         passwordHash: hashedPassword,
-        role,
+        roleId,
         currentLevelId,
         profile: {
           create: {
@@ -75,6 +74,7 @@ export async function POST(req: Request) {
         },
       },
       include: {
+        role: true,
         profile: true,
         currentLevel: true,
         growthScore: true,
@@ -89,7 +89,7 @@ export async function POST(req: Request) {
       email: newUser.email,
       name: newUser.profile?.fullName ?? newUser.email,
       firstName: newUser.profile?.firstName ?? "Brother",
-      role: newUser.role,
+      role: newUser.role.code,         // e.g. "ADMIN", "MEMBER", "GROUP_LEADER"
       levelNumber: newUser.currentLevel?.levelNumber ?? 1,
       levelTitle: newUser.currentLevel?.title ?? "Level 1: New Believers",
       groupName: newUser.memberships[0]?.group?.name ?? "General Brotherhood",

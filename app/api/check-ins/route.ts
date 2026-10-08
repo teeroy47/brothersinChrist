@@ -37,8 +37,8 @@ export async function POST(req: Request) {
       // Update Growth Score in PostgreSQL
       const consistency = Math.round(
         ((data.prayerDays + data.bibleDays) / 14) * 50 +
-          (data.attendedMeeting ? 25 : 0) +
-          (data.metAccountability ? 25 : 0)
+        (data.attendedMeeting ? 25 : 0) +
+        (data.metAccountability ? 25 : 0)
       );
 
       await db.growthScore.upsert({
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
         {
           success: true,
           simulated: true,
-          message: "Check-in validated successfully. Local PostgreSQL connection offline, simulated response returned.",
+          message: "Check-in validated successfully. PostgreSQL connection offline, simulated response returned.",
           checkIn: {
             id: `chk-mock-${Date.now()}`,
             ...data,

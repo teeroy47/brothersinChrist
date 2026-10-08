@@ -1,40 +1,106 @@
 // Brothers In Christ (BIC) - Prisma Schema
 // PostgreSQL (Local / pgAdmin 4) & Supabase Compatible
+//
+// Member Journey mapped to schema:
+//   10 Visitor              -> User row exists, journeyStageId = 10 (no Profile yet)
+//   20 Create Profile       -> Profile created
+//   30 Join BIC             -> User.joinedAt set (formal membership)
+//   40 Assign Level         -> User.currentLevelId set
+//   50 Assign Small Group   -> GroupMember created
+//   60 Assign Accountability Partner -> AccountabilityPartner created
+//   70 Daily Practices      -> DailyPractice rows logged
+//   80 Weekly Check-In      -> CheckIn rows logged
+//   90 Leader Review        -> LevelReview created
+//  100 Growth Score         -> GrowthScore computed/updated
+//
+// Every stage transition is optionally logged to JourneyStageHistory so the
+// funnel above can be reconstructed/reported on later.
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")   // pooled  (Supabase PgBouncer) — used by the app at runtime
+  directUrl = env("DIRECT_URL")     // direct  (Supabase direct connection) — used by prisma migrate
 }
 
 generator client {
   provider = "prisma-client-js"
 }
 
-enum Role {
-  MEMBER
-  GROUP_LEADER
-  LEVEL_LEADER
-  ADMIN
-}
+// -----------------------------------------------------------------------------
+// 0. Configurable lookup tables (replace native Prisma enums)
+//    Int codes are gap-spaced (10, 20, 30...) so new values can be inserted
+//    later without renumbering, and are editable/admin-manageable as data
+//    rather than requiring a migration.
+// -----------------------------------------------------------------------------
 
-enum AttendanceStatus {
-  PRESENT
-  ABSENT
-  EXCUSED
-  LATE
-}
+model Role {
+  id        Int     @id
+  code      String  @unique
+  label     String
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
 
-enum GroupRole {
-  MEMBER
-  LEADER
-  CO_LEADER
-}
+  users User[]
 
-enum ReviewStatus {
-  PENDING
-  APPROVED
-  NEEDS_FOLLOW_UP
+  @@map("roles")
 }
+// seed: 10 MEMBER, 20 GROUP_LEADER, 30 LEVEL_LEADER, 40 ADMIN
+
+model AttendanceStatus {
+  id        Int     @id
+  code      String  @unique
+  label     String
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+
+  attendances Attendance[]
+
+  @@map("attendance_statuses")
+}
+// seed: 10 PRESENT, 20 ABSENT, 30 EXCUSED, 40 LATE
+
+model GroupRole {
+  id        Int     @id
+  code      String  @unique
+  label     String
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+
+  members GroupMember[]
+
+  @@map("group_roles")
+}
+// seed: 10 MEMBER, 20 CO_LEADER, 30 LEADER
+
+model ReviewStatus {
+  id        Int     @id
+  code      String  @unique
+  label     String
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+
+  reviews LevelReview[]
+
+  @@map("review_statuses")
+}
+// seed: 10 PENDING, 20 NEEDS_FOLLOW_UP, 30 APPROVED
+
+model JourneyStage {
+  id        Int     @id
+  code      String  @unique
+  label     String
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+
+  users   User[]
+  history JourneyStageHistory[]
+
+  @@map("journey_stages")
+}
+// seed (mirrors the funnel diagram exactly):
+// 10 VISITOR, 20 PROFILE_CREATED, 30 MEMBER, 40 LEVEL_ASSIGNED,
+// 50 GROUP_ASSIGNED, 60 PARTNER_ASSIGNED, 70 DAILY_PRACTICE,
+// 80 WEEKLY_CHECKIN, 90 LEADER_REVIEW, 100 GROWTH_SCORE
 
 // -----------------------------------------------------------------------------
 // 1. Identity Domain
@@ -44,25 +110,35 @@ model User {
   id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email           String    @unique
   passwordHash    String?
-  role            Role      @default(MEMBER)
+  roleId          Int       @default(10)
+  role            Role      @relation(fields: [roleId], references: [id])
   currentLevelId  String?   @db.Uuid
+  currentLevel    Level?    @relation(fields: [currentLevelId], references: [id])
+
+  // Journey tracking (stage 10 Visitor -> 100 Growth Score)
+  journeyStageId  Int       @default(10)
+  journeyStage    JourneyStage @relation(fields: [journeyStageId], references: [id])
+  joinedAt        DateTime? // set when the user formally joins (stage 30)
+
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
   // Relations
   profile               Profile?
-  currentLevel          Level?                  @relation(fields: [currentLevelId], references: [id])
   memberships           GroupMember[]
-  ledGroups             Group[]                 @relation("GroupLeader")
-  checkIns              CheckIn[]
-  attendances           Attendance[]
-  growthScore           GrowthScore?
-  partnersAsUser1       AccountabilityPartner[] @relation("User1Partners")
-  partnersAsUser2       AccountabilityPartner[] @relation("User2Partners")
-  leaderReports         LeaderReport[]
-  userLevelReviews      LevelReview[]           @relation("UserLevelReviews")
-  reviewerLevelReviews  LevelReview[]           @relation("ReviewerLevelReviews")
+  ledGroups              Group[]                @relation("GroupLeader")
+  checkIns               CheckIn[]
+  dailyPractices          DailyPractice[]
+  attendances            Attendance[]
+  growthScore             GrowthScore?
+  partnersAsUser1         AccountabilityPartner[] @relation("User1Partners")
+  partnersAsUser2         AccountabilityPartner[] @relation("User2Partners")
+  leaderReports            LeaderReport[]
+  userLevelReviews         LevelReview[]          @relation("UserLevelReviews")
+  reviewerLevelReviews     LevelReview[]          @relation("ReviewerLevelReviews")
+  journeyStageHistory      JourneyStageHistory[]
 
+  @@index([journeyStageId])
   @@map("users")
 }
 
@@ -87,6 +163,21 @@ model Profile {
   @@map("profiles")
 }
 
+// Logs each transition through the funnel shown in the member journey
+// diagram, so the flow can be reconstructed/reported on per user.
+model JourneyStageHistory {
+  id        String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String       @db.Uuid
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stageId   Int
+  stage     JourneyStage @relation(fields: [stageId], references: [id])
+  enteredAt DateTime     @default(now())
+  notes     String?      @db.Text
+
+  @@index([userId])
+  @@map("journey_stage_history")
+}
+
 // -----------------------------------------------------------------------------
 // 2. Discipleship Domain
 // -----------------------------------------------------------------------------
@@ -109,11 +200,29 @@ model Level {
   @@map("levels")
 }
 
+// Daily prayer / Bible practice log — distinct from the weekly CheckIn
+// rollup. Corresponds to the "Daily Practices" stage in the journey.
+model DailyPractice {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String   @db.Uuid
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  practiceDate DateTime @db.Date
+  prayed       Boolean  @default(false)
+  readBible    Boolean  @default(false)
+  notes        String?  @db.Text
+  createdAt    DateTime @default(now())
+
+  @@unique([userId, practiceDate])
+  @@index([practiceDate])
+  @@map("daily_practices")
+}
+
 model CheckIn {
   id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId              String    @db.Uuid
   user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   weekLabel           String
+  weekStartDate       DateTime  @db.Date
   prayerDays          Int       @default(0)
   bibleDays           Int       @default(0)
   attendedMeeting     Boolean   @default(false)
@@ -125,6 +234,8 @@ model CheckIn {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
+  @@unique([userId, weekLabel])
+  @@index([weekStartDate])
   @@map("check_ins")
 }
 
@@ -178,13 +289,14 @@ model Group {
 }
 
 model GroupMember {
-  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  groupId   String    @db.Uuid
-  group     Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  userId    String    @db.Uuid
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role      GroupRole @default(MEMBER)
-  joinedAt  DateTime  @default(now())
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  groupId    String    @db.Uuid
+  group      Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId     String    @db.Uuid
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  groupRoleId Int      @default(10)
+  groupRole  GroupRole @relation(fields: [groupRoleId], references: [id])
+  joinedAt   DateTime  @default(now())
 
   @@unique([groupId, userId])
   @@map("group_members")
@@ -218,20 +330,23 @@ model Event {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
+  @@index([dateTime])
   @@map("events")
 }
 
 model Attendance {
-  id        String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String            @db.Uuid
-  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  eventId   String            @db.Uuid
-  event     Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  status    AttendanceStatus  @default(PRESENT)
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  id                  String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId              String           @db.Uuid
+  user                User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventId             String           @db.Uuid
+  event               Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  attendanceStatusId  Int              @default(10)
+  attendanceStatus    AttendanceStatus @relation(fields: [attendanceStatusId], references: [id])
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 
   @@unique([userId, eventId])
+  @@index([eventId])
   @@map("attendance")
 }
 
@@ -270,6 +385,7 @@ model LeaderReport {
   createdAt                 DateTime  @default(now())
   updatedAt                 DateTime  @updatedAt
 
+  @@index([leaderId])
   @@map("leader_reports")
 }
 
@@ -281,10 +397,30 @@ model LevelReview {
   reviewer          User          @relation("ReviewerLevelReviews", fields: [reviewerId], references: [id])
   targetLevelId     String        @db.Uuid
   targetLevel       Level         @relation(fields: [targetLevelId], references: [id])
-  status            ReviewStatus  @default(PENDING)
+  reviewStatusId    Int           @default(10)
+  reviewStatus      ReviewStatus  @relation(fields: [reviewStatusId], references: [id])
   feedback          String        @db.Text
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 
+  @@index([userId])
   @@map("level_reviews")
+}
+
+// -----------------------------------------------------------------------------
+// 7. Schema Management
+// -----------------------------------------------------------------------------
+
+// Human-readable log of intentional schema changes.
+// Prisma tracks migrations internally in _prisma_migrations; this table
+// adds context (description, author) that is visible in the app and queryable.
+model MigrationLog {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @unique              // e.g. "add_journey_stage_history"
+  version     String                        // semver or date tag, e.g. "2026-09-24"
+  description String   @db.Text            // what changed and why
+  appliedBy   String?                       // email / name of person who applied it
+  appliedAt   DateTime @default(now())
+
+  @@map("migration_logs")
 }

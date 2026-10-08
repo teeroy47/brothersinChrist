@@ -12,8 +12,8 @@ export function SignInForm() {
   const next = searchParams.get("next");
   const { signIn } = useAuthStore();
 
-  const [email, setEmail] = useState("admin@bic.app");
-  const [password, setPassword] = useState("admin1234");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -69,15 +69,6 @@ export function SignInForm() {
         </div>
       )}
 
-      <div className="card stack-sm" style={{ background: "rgba(182, 139, 53, 0.08)", borderColor: "rgba(182, 139, 53, 0.25)", padding: 12 }}>
-        <span className="eyebrow" style={{ color: "#5b4610", fontSize: "0.7rem" }}>
-          Super Admin Credentials
-        </span>
-        <div className="row" style={{ gap: 12, fontSize: "0.82rem" }}>
-          <span>Email: <strong>admin@bic.app</strong></span>
-          <span>Password: <strong>admin1234</strong></span>
-        </div>
-      </div>
 
       <label className="field">
         <span style={{ fontWeight: 700, fontSize: "0.9rem" }}>Email address</span>
@@ -140,10 +131,14 @@ export function SignUpForm() {
     password: "",
     phone: "",
     city: "Harare",
-    church: ""
+    church: "",
   });
+  const [showMore, setShowMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm((curr) => ({ ...curr, [field]: e.target.value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,7 +158,6 @@ export function SignUpForm() {
         setLoading(false);
         return;
       }
-
       router.push("/portal/dashboard");
     } catch {
       setError("An unexpected error occurred. Please try again.");
@@ -173,6 +167,7 @@ export function SignUpForm() {
 
   return (
     <form className="card stack" onSubmit={handleSubmit}>
+      {/* Header */}
       <div className="stack-sm">
         <div className="row" style={{ gap: 8 }}>
           <UserPlus size={18} style={{ color: "var(--gold)" }} />
@@ -184,6 +179,7 @@ export function SignUpForm() {
         </p>
       </div>
 
+      {/* Error */}
       {error && (
         <div
           className="row"
@@ -202,14 +198,16 @@ export function SignUpForm() {
         </div>
       )}
 
+      {/* Required fields */}
       <label className="field">
         <span style={{ fontWeight: 700, fontSize: "0.9rem" }}>Full name *</span>
         <input
           name="fullName"
           placeholder="e.g. Tawanda Moyo"
           required
+          autoComplete="name"
           value={form.fullName}
-          onChange={(e) => setForm((curr) => ({ ...curr, fullName: e.target.value }))}
+          onChange={set("fullName")}
         />
       </label>
 
@@ -220,8 +218,9 @@ export function SignUpForm() {
           type="email"
           placeholder="name@example.com"
           required
+          autoComplete="email"
           value={form.email}
-          onChange={(e) => setForm((curr) => ({ ...curr, email: e.target.value }))}
+          onChange={set("email")}
         />
       </label>
 
@@ -232,43 +231,84 @@ export function SignUpForm() {
           type="password"
           placeholder="Choose a strong password"
           required
+          autoComplete="new-password"
           value={form.password}
-          onChange={(e) => setForm((curr) => ({ ...curr, password: e.target.value }))}
+          onChange={set("password")}
         />
       </label>
 
-      <label className="field">
-        <span style={{ fontWeight: 700, fontSize: "0.9rem" }}>Phone number</span>
-        <input
-          name="phone"
-          placeholder="+263 77 ..."
-          value={form.phone}
-          onChange={(e) => setForm((curr) => ({ ...curr, phone: e.target.value }))}
-        />
-      </label>
+      {/* Optional extras — collapsed by default */}
+      <div>
+        <button
+          type="button"
+          onClick={() => setShowMore((v) => !v)}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: "4px 0",
+            color: "var(--muted)",
+            fontSize: "0.82rem",
+            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+          }}
+        >
+          <span
+            style={{
+              display: "inline-block",
+              transition: "transform 0.18s",
+              transform: showMore ? "rotate(90deg)" : "rotate(0deg)",
+              fontSize: "0.7rem",
+            }}
+          >
+            ▶
+          </span>
+          {showMore ? "Hide optional details" : "Add phone, city & church (optional)"}
+        </button>
 
-      <div className="grid-2" style={{ gap: 12 }}>
-        <label className="field">
-          <span style={{ fontWeight: 700, fontSize: "0.9rem" }}>City</span>
-          <input
-            name="city"
-            placeholder="Harare"
-            value={form.city}
-            onChange={(e) => setForm((curr) => ({ ...curr, city: e.target.value }))}
-          />
-        </label>
+        {showMore && (
+          <div className="stack-sm" style={{ marginTop: 12, gap: 12 }}>
+            <label className="field">
+              <span style={{ fontWeight: 700, fontSize: "0.9rem" }}>Phone number</span>
+              <input
+                name="phone"
+                type="tel"
+                placeholder="+263 77 ..."
+                autoComplete="tel"
+                value={form.phone}
+                onChange={set("phone")}
+              />
+            </label>
 
-        <label className="field">
-          <span style={{ fontWeight: 700, fontSize: "0.9rem" }}>Church / Fellowship</span>
-          <input
-            name="church"
-            placeholder="Local church name"
-            value={form.church}
-            onChange={(e) => setForm((curr) => ({ ...curr, church: e.target.value }))}
-          />
-        </label>
+            <div className="grid-2" style={{ gap: 12 }}>
+              <label className="field">
+                <span style={{ fontWeight: 700, fontSize: "0.9rem" }}>City</span>
+                <input
+                  name="city"
+                  placeholder="Harare"
+                  autoComplete="address-level2"
+                  value={form.city}
+                  onChange={set("city")}
+                />
+              </label>
+
+              <label className="field">
+                <span style={{ fontWeight: 700, fontSize: "0.9rem" }}>Church / Fellowship</span>
+                <input
+                  name="church"
+                  placeholder="Local church name"
+                  value={form.church}
+                  onChange={set("church")}
+                />
+              </label>
+            </div>
+          </div>
+        )}
       </div>
 
+      {/* Submit */}
       <button
         className="button"
         type="submit"
@@ -277,13 +317,14 @@ export function SignUpForm() {
           background: "var(--gold)",
           color: "#000",
           fontWeight: 800,
-          marginTop: 6,
+          marginTop: 4,
         }}
       >
-        <span>{loading ? "Registering..." : "Create Account"}</span>
+        <span>{loading ? "Creating account..." : "Create Account"}</span>
         <ArrowRight size={16} style={{ marginLeft: 6 }} />
       </button>
 
+      {/* Footer link */}
       <div style={{ textAlign: "center", paddingTop: 8, borderTop: "1px solid var(--border)" }}>
         <p className="muted" style={{ fontSize: "0.82rem", margin: 0 }}>
           Already have an account?{" "}

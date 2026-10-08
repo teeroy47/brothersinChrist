@@ -44,8 +44,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       try {
         const stored = window.localStorage.getItem("bic_user_session");
         if (stored) {
-          set({ currentUser: JSON.parse(stored), isHydrated: true });
-          return;
+          const parsed = JSON.parse(stored);
+          // Guard: role must be a plain code string (e.g. "ADMIN").
+          // Wipe stale sessions that have an integer FK or object from before the schema change.
+          if (parsed && typeof parsed.role === "string") {
+            set({ currentUser: parsed, isHydrated: true });
+            return;
+          }
+          // Stale session — clear it so the user gets a fresh sign-in
+          window.localStorage.removeItem("bic_user_session");
         }
       } catch (e) {
         console.error("Failed to parse stored session", e);

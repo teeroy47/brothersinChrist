@@ -18,6 +18,7 @@ export async function POST(req: Request) {
     const user = await db.user.findUnique({
       where: { email: normalizedEmail },
       include: {
+        role: true,
         profile: true,
         currentLevel: true,
         growthScore: true,
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
       email: user.email,
       name: user.profile?.fullName ?? user.email,
       firstName: user.profile?.firstName ?? "Brother",
-      role: user.role,
+      role: user.role.code,           // e.g. "ADMIN", "MEMBER", "GROUP_LEADER"
       levelNumber: user.currentLevel?.levelNumber ?? 1,
       levelTitle: user.currentLevel?.title ?? "Level 1: New Believers",
       groupName: user.memberships[0]?.group?.name ?? "General Brotherhood",

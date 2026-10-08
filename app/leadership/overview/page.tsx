@@ -178,7 +178,7 @@ export default function LeadershipOverviewPage() {
           </div>
           <strong className="data-value">{loading ? "..." : totalBrothers}</strong>
           <span className="data-detail" style={{ color: "var(--accent)", fontWeight: 700 }}>
-            Active in PostgreSQL
+            Active
           </span>
         </div>
 
@@ -290,8 +290,8 @@ export default function LeadershipOverviewPage() {
                     m.role === "ADMIN"
                       ? "var(--gold)"
                       : m.role.includes("LEADER")
-                      ? "var(--accent)"
-                      : "var(--muted)";
+                        ? "var(--accent)"
+                        : "var(--muted)";
 
                   const formattedDate = new Date(m.createdAt).toLocaleDateString("en-US", {
                     month: "short",

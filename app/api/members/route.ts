@@ -1,12 +1,20 @@
 import { NextResponse } from "next/server";
-import { Role } from "@prisma/client";
 import { db } from "@/src/lib/db";
 import { hashPassword } from "@/src/lib/auth-server";
+
+// Role code → roleId lookup (mirrors the seed data)
+const ROLE_CODE_TO_ID: Record<string, number> = {
+  MEMBER:       10,
+  GROUP_LEADER: 20,
+  LEVEL_LEADER: 30,
+  ADMIN:        40,
+};
 
 export async function GET() {
   try {
     const users = await db.user.findMany({
       include: {
+        role: true,
         profile: true,
         currentLevel: true,
         growthScore: true,
@@ -22,7 +30,7 @@ export async function GET() {
       email: u.email,
       name: u.profile?.fullName ?? u.email,
       firstName: u.profile?.firstName ?? "Brother",
-      role: u.role,
+      role: u.role.code,                          // e.g. "ADMIN", "MEMBER"
       levelNumber: u.currentLevel?.levelNumber ?? 1,
       levelTitle: u.currentLevel?.title ?? "Level 1: New Believers",
       groupName: u.memberships[0]?.group?.name ?? "Unassigned",
@@ -66,13 +74,16 @@ export async function POST(req: Request) {
       );
     }
 
+    // Resolve roleId from the code string sent by the form (default to MEMBER)
+    const roleCode = typeof role === "string" && role in ROLE_CODE_TO_ID ? role : "MEMBER";
+    const roleId = ROLE_CODE_TO_ID[roleCode];
+
     // Find requested level or default to Level 1
     const targetLevelNum = Number(levelNumber) || 1;
     const level = await db.level.findUnique({
       where: { levelNumber: targetLevelNum },
     });
 
-    const userRole = (role in Role ? role : Role.MEMBER) as Role;
     const trimmedName = String(fullName).trim();
     const firstName = trimmedName.split(" ")[0] || trimmedName;
     const defaultPass = password ? String(password) : "bic2026";
@@ -82,7 +93,7 @@ export async function POST(req: Request) {
       data: {
         email: normalizedEmail,
         passwordHash: hashedPassword,
-        role: userRole,
+        roleId,
         currentLevelId: level?.id,
         profile: {
           create: {
@@ -106,6 +117,7 @@ export async function POST(req: Request) {
         },
       },
       include: {
+        role: true,
         profile: true,
         currentLevel: true,
       },
@@ -115,7 +127,7 @@ export async function POST(req: Request) {
       id: newUser.id,
       email: newUser.email,
       name: newUser.profile?.fullName,
-      role: newUser.role,
+      role: newUser.role.code,
       levelTitle: newUser.currentLevel?.title,
     }, { status: 201 });
   } catch (error) {

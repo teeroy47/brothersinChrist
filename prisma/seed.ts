@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { hashPassword } from "../src/lib/auth-server";
 
 const prisma = new PrismaClient();
@@ -9,6 +9,7 @@ async function main() {
   // 1. Wipe all existing records in reverse dependency order
   await prisma.attendance.deleteMany();
   await prisma.event.deleteMany();
+  await prisma.dailyPractice.deleteMany();
   await prisma.checkIn.deleteMany();
   await prisma.growthScore.deleteMany();
   await prisma.leaderReport.deleteMany();
@@ -18,11 +19,68 @@ async function main() {
   await prisma.group.deleteMany();
   await prisma.devotion.deleteMany();
   await prisma.readingPlan.deleteMany();
+  await prisma.journeyStageHistory.deleteMany();
   await prisma.profile.deleteMany();
   await prisma.user.deleteMany();
   await prisma.level.deleteMany();
+  // Lookup tables
+  await prisma.reviewStatus.deleteMany();
+  await prisma.attendanceStatus.deleteMany();
+  await prisma.groupRole.deleteMany();
+  await prisma.journeyStage.deleteMany();
+  await prisma.role.deleteMany();
 
-  // 2. Seed the 5 Core Formation Levels
+  // 2. Seed lookup tables
+  await prisma.role.createMany({
+    data: [
+      { id: 10, code: "MEMBER",       label: "Member",        sortOrder: 10 },
+      { id: 20, code: "GROUP_LEADER", label: "Group Leader",  sortOrder: 20 },
+      { id: 30, code: "LEVEL_LEADER", label: "Level Leader",  sortOrder: 30 },
+      { id: 40, code: "ADMIN",        label: "Admin",         sortOrder: 40 },
+    ],
+  });
+
+  await prisma.journeyStage.createMany({
+    data: [
+      { id: 10,  code: "VISITOR",          label: "Visitor",             sortOrder: 10  },
+      { id: 20,  code: "PROFILE_CREATED",  label: "Profile Created",     sortOrder: 20  },
+      { id: 30,  code: "MEMBER",           label: "Member",              sortOrder: 30  },
+      { id: 40,  code: "LEVEL_ASSIGNED",   label: "Level Assigned",      sortOrder: 40  },
+      { id: 50,  code: "GROUP_ASSIGNED",   label: "Group Assigned",      sortOrder: 50  },
+      { id: 60,  code: "PARTNER_ASSIGNED", label: "Partner Assigned",    sortOrder: 60  },
+      { id: 70,  code: "DAILY_PRACTICE",   label: "Daily Practice",      sortOrder: 70  },
+      { id: 80,  code: "WEEKLY_CHECKIN",   label: "Weekly Check-In",     sortOrder: 80  },
+      { id: 90,  code: "LEADER_REVIEW",    label: "Leader Review",       sortOrder: 90  },
+      { id: 100, code: "GROWTH_SCORE",     label: "Growth Score",        sortOrder: 100 },
+    ],
+  });
+
+  await prisma.groupRole.createMany({
+    data: [
+      { id: 10, code: "MEMBER",    label: "Member",    sortOrder: 10 },
+      { id: 20, code: "CO_LEADER", label: "Co-Leader", sortOrder: 20 },
+      { id: 30, code: "LEADER",    label: "Leader",    sortOrder: 30 },
+    ],
+  });
+
+  await prisma.reviewStatus.createMany({
+    data: [
+      { id: 10, code: "PENDING",          label: "Pending",         sortOrder: 10 },
+      { id: 20, code: "NEEDS_FOLLOW_UP",  label: "Needs Follow-Up", sortOrder: 20 },
+      { id: 30, code: "APPROVED",         label: "Approved",        sortOrder: 30 },
+    ],
+  });
+
+  await prisma.attendanceStatus.createMany({
+    data: [
+      { id: 10, code: "PRESENT", label: "Present", sortOrder: 10 },
+      { id: 20, code: "ABSENT",  label: "Absent",  sortOrder: 20 },
+      { id: 30, code: "EXCUSED", label: "Excused", sortOrder: 30 },
+      { id: 40, code: "LATE",    label: "Late",    sortOrder: 40 },
+    ],
+  });
+
+  // 3. Seed the 5 Core Formation Levels
   const level1 = await prisma.level.create({
     data: {
       id: "b0000000-0000-0000-0000-000000000001",
@@ -141,7 +199,7 @@ async function main() {
     data: {
       email: "admin@bic.app",
       passwordHash: superAdminPasswordHash,
-      role: Role.ADMIN,
+      roleId: 40, // ADMIN
       currentLevelId: level5.id,
       profile: {
         create: {
