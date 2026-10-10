@@ -11,9 +11,21 @@ import {
   Plus,
   Send,
   Check,
+  Flag,
+  AlertOctagon,
+  EyeOff,
 } from "lucide-react";
 import { PortalShell } from "@/src/components/portal/PortalShell";
 import { useAuthStore } from "@/src/stores/auth-store";
+
+interface PrayerItem {
+  id: string;
+  author: string;
+  request: string;
+  prayedCount: number;
+  timeAgo: string;
+  isReported?: boolean;
+}
 
 export default function MemberCirclePage() {
   const { currentUser } = useAuthStore();
@@ -21,7 +33,7 @@ export default function MemberCirclePage() {
   const groupName = currentUser?.groupName ?? "Harare Central Men";
   const [prayedSet, setPrayedSet] = useState<Record<string, boolean>>({});
   const [newPrayer, setNewPrayer] = useState("");
-  const [prayerList, setPrayerList] = useState([
+  const [prayerList, setPrayerList] = useState<PrayerItem[]>([
     {
       id: "pr-1",
       author: "Tawanda Moyo",
@@ -44,6 +56,13 @@ export default function MemberCirclePage() {
       timeAgo: "4 days ago",
     },
   ]);
+
+  // W3C §2.9 Abuse Reporting State
+  const [activeReportItem, setActiveReportItem] = useState<PrayerItem | null>(null);
+  const [reportReason, setReportReason] = useState("");
+  const [reportCategory, setReportCategory] = useState("PRAYER_REQUEST");
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [reportSuccessMessage, setReportSuccessMessage] = useState<string | null>(null);
 
   const togglePrayed = (id: string) => {
     setPrayedSet((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -71,6 +90,54 @@ export default function MemberCirclePage() {
       ...prev,
     ]);
     setNewPrayer("");
+  };
+
+  const handleOpenReport = (item: PrayerItem) => {
+    setActiveReportItem(item);
+    setReportReason("");
+    setReportCategory("PRAYER_REQUEST");
+    setReportSuccessMessage(null);
+  };
+
+  const handleSubmitReport = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeReportItem || !reportReason.trim()) return;
+
+    setReportSubmitting(true);
+    try {
+      const res = await fetch("/api/abuse-reports", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contextType: reportCategory,
+          details: `[Item ${activeReportItem.id} by ${activeReportItem.author}]: ${reportReason.trim()}`,
+        }),
+      });
+
+      if (res.ok) {
+        // W3C §2.9.1: Mask the interaction immediately to protect the brother
+        setPrayerList((prev) =>
+          prev.map((p) =>
+            p.id === activeReportItem.id ? { ...p, isReported: true } : p
+          )
+        );
+        setReportSuccessMessage("Thank you. Your report was submitted and the content has been hidden.");
+        setTimeout(() => {
+          setActiveReportItem(null);
+          setReportSuccessMessage(null);
+        }, 1500);
+      }
+    } catch {
+      // Offline fallback
+      setPrayerList((prev) =>
+        prev.map((p) =>
+          p.id === activeReportItem.id ? { ...p, isReported: true } : p
+        )
+      );
+      setActiveReportItem(null);
+    } finally {
+      setReportSubmitting(false);
+    }
   };
 
   return (
@@ -154,39 +221,86 @@ export default function MemberCirclePage() {
               </div>
             </form>
 
-            {/* Prayer Requests List */}
+            {/* Prayer Requests List with W3C §2.9.1 [ ⚑ Report ] trigger */}
             <div className="stack-sm" style={{ gap: 14 }}>
-              {prayerList.map((item) => (
-                <div key={item.id} className="card stack-sm" style={{ background: "rgba(255,255,255,0.6)", padding: 16 }}>
-                  <div className="space-between">
-                    <strong>{item.author}</strong>
-                    <span className="muted" style={{ fontSize: "0.78rem" }}>{item.timeAgo}</span>
-                  </div>
-                  <p style={{ margin: "4px 0 8px", fontSize: "0.92rem", lineHeight: 1.5, color: "#1f2937" }}>
-                    {item.request}
-                  </p>
-                  <div className="space-between" style={{ paddingTop: 8, borderTop: "1px solid var(--border)" }}>
-                    <span className="muted" style={{ fontSize: "0.8rem" }}>
-                      {item.prayedCount} brothers praying
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => togglePrayed(item.id)}
-                      className={prayedSet[item.id] ? "button" : "button-secondary"}
+              {prayerList.map((item) => {
+                if (item.isReported) {
+                  return (
+                    <div
+                      key={item.id}
+                      className="card"
                       style={{
-                        padding: "4px 12px",
-                        minHeight: 30,
-                        fontSize: "0.75rem",
-                        background: prayedSet[item.id] ? "var(--accent)" : undefined,
-                        color: prayedSet[item.id] ? "#fff" : undefined,
+                        padding: 14,
+                        background: "var(--surface-muted)",
+                        border: "1px dashed var(--border)",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        color: "var(--muted)",
+                        fontSize: "0.85rem",
                       }}
                     >
-                      <Check size={12} style={{ marginRight: 4 }} />
-                      <span>{prayedSet[item.id] ? "I Prayed" : "Stand in Prayer"}</span>
-                    </button>
+                      <EyeOff size={16} />
+                      <span>This prayer request has been hidden for review by the team.</span>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div key={item.id} className="card stack-sm" style={{ padding: 16 }}>
+                    <div className="space-between">
+                      <strong>{item.author}</strong>
+                      <div className="row" style={{ gap: 10 }}>
+                        <span className="muted" style={{ fontSize: "0.78rem" }}>{item.timeAgo}</span>
+                        {/* W3C §2.9.1 In-context [ ⚑ Report ] action */}
+                        <button
+                          type="button"
+                          onClick={() => handleOpenReport(item)}
+                          title="Report concern or inappropriate content confidentially"
+                          style={{
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            padding: "2px 6px",
+                            color: "var(--muted)",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 4,
+                            fontSize: "0.75rem",
+                            borderRadius: 4,
+                          }}
+                        >
+                          <Flag size={12} />
+                          <span>Report</span>
+                        </button>
+                      </div>
+                    </div>
+                    <p style={{ margin: "4px 0 8px", fontSize: "0.92rem", lineHeight: 1.5, color: "inherit" }}>
+                      {item.request}
+                    </p>
+                    <div className="space-between" style={{ paddingTop: 8, borderTop: "1px solid var(--border)" }}>
+                      <span className="muted" style={{ fontSize: "0.8rem" }}>
+                        {item.prayedCount} brothers praying
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => togglePrayed(item.id)}
+                        className={prayedSet[item.id] ? "button" : "button-secondary"}
+                        style={{
+                          padding: "4px 12px",
+                          minHeight: 30,
+                          fontSize: "0.75rem",
+                          background: prayedSet[item.id] ? "var(--accent)" : undefined,
+                          color: prayedSet[item.id] ? "#fff" : undefined,
+                        }}
+                      >
+                        <Check size={12} style={{ marginRight: 4 }} />
+                        <span>{prayedSet[item.id] ? "I Prayed" : "Stand in Prayer"}</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -202,23 +316,23 @@ export default function MemberCirclePage() {
             </div>
 
             <div className="stack-sm" style={{ gap: 10 }}>
-              <div className="card stack-sm" style={{ background: "rgba(255,255,255,0.7)", padding: 12, border: "1px solid rgba(182, 139, 53, 0.35)" }}>
+              <div className="card stack-sm" style={{ padding: 12, borderColor: "rgba(182, 139, 53, 0.4)" }}>
                 <div className="space-between">
                   <div>
                     <strong>Simba Ndlovu</strong>
-                    <p className="muted" style={{ margin: 0, fontSize: "0.78rem" }}>Financial Analyst</p>
+                    <p className="muted" style={{ margin: 0, fontSize: "0.78rem" }}>Circle Leader</p>
                   </div>
-                  <span className="pill" style={{ fontSize: "0.7rem", padding: "2px 8px", minHeight: 22, borderColor: "var(--gold)" }}>
-                    Circle Leader
+                  <span className="pill" style={{ fontSize: "0.7rem", padding: "2px 8px", minHeight: 22, borderColor: "var(--gold)", color: "var(--gold)" }}>
+                    Leader
                   </span>
                 </div>
               </div>
 
-              <div className="card stack-sm" style={{ background: "rgba(255,255,255,0.6)", padding: 12 }}>
+              <div className="card stack-sm" style={{ padding: 12 }}>
                 <div className="space-between">
                   <div>
                     <strong>Tawanda Moyo</strong>
-                    <p className="muted" style={{ margin: 0, fontSize: "0.78rem" }}>Project Coordinator</p>
+                    <p className="muted" style={{ margin: 0, fontSize: "0.78rem" }}>Member</p>
                   </div>
                   <span className="pill" style={{ fontSize: "0.7rem", padding: "2px 8px", minHeight: 22 }}>
                     Member
@@ -226,11 +340,11 @@ export default function MemberCirclePage() {
                 </div>
               </div>
 
-              <div className="card stack-sm" style={{ background: "rgba(255,255,255,0.6)", padding: 12 }}>
+              <div className="card stack-sm" style={{ padding: 12 }}>
                 <div className="space-between">
                   <div>
                     <strong>Tinashe Shumba</strong>
-                    <p className="muted" style={{ margin: 0, fontSize: "0.78rem" }}>Software Engineer</p>
+                    <p className="muted" style={{ margin: 0, fontSize: "0.78rem" }}>Member</p>
                   </div>
                   <span className="pill" style={{ fontSize: "0.7rem", padding: "2px 8px", minHeight: 22 }}>
                     Member
@@ -238,11 +352,11 @@ export default function MemberCirclePage() {
                 </div>
               </div>
 
-              <div className="card stack-sm" style={{ background: "rgba(255,255,255,0.6)", padding: 12 }}>
+              <div className="card stack-sm" style={{ padding: 12 }}>
                 <div className="space-between">
                   <div>
                     <strong>Farai Mutasa</strong>
-                    <p className="muted" style={{ margin: 0, fontSize: "0.78rem" }}>Civil Engineer</p>
+                    <p className="muted" style={{ margin: 0, fontSize: "0.78rem" }}>Member</p>
                   </div>
                   <span className="pill" style={{ fontSize: "0.7rem", padding: "2px 8px", minHeight: 22 }}>
                     Member
@@ -253,6 +367,92 @@ export default function MemberCirclePage() {
           </div>
         </div>
       </div>
+
+      {/* Community Safety & Abuse Reporting Modal (W3C §2.9.1) */}
+      {activeReportItem && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "grid",
+            placeItems: "center",
+            zIndex: 1000,
+            padding: 20,
+          }}
+        >
+          <div className="card stack" style={{ maxWidth: 480, padding: 28, background: "var(--surface)" }}>
+            <div className="row" style={{ gap: 10, color: "var(--gold)" }}>
+              <AlertOctagon size={24} />
+              <h3 className="heading-md" style={{ margin: 0 }}>Report a concern</h3>
+            </div>
+
+            <p className="muted" style={{ fontSize: "0.85rem", margin: 0 }}>
+              If this message is inappropriate, harmful, or needs immediate attention, let our support team know. Your report is confidential and the post will be hidden right away.
+            </p>
+
+            <form onSubmit={handleSubmitReport} className="stack-sm" style={{ gap: 14 }}>
+              <label className="field">
+                <span style={{ fontWeight: 700, fontSize: "0.85rem" }}>Report Category</span>
+                <select
+                  value={reportCategory}
+                  onChange={(e) => setReportCategory(e.target.value)}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: "var(--radius-sm)",
+                    border: "1px solid var(--border)",
+                    background: "var(--surface)",
+                  }}
+                >
+                  <option value="PRAYER_REQUEST">Concerning or inappropriate message</option>
+                  <option value="DIRECT_HARASSMENT">Harassment or unwelcome message</option>
+                  <option value="CRISIS_FLAG">Urgent safety or crisis need</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </label>
+
+              <label className="field">
+                <span style={{ fontWeight: 700, fontSize: "0.85rem" }}>Explanation & Details *</span>
+                <textarea
+                  rows={3}
+                  required
+                  value={reportReason}
+                  onChange={(e) => setReportReason(e.target.value)}
+                  placeholder="Help us understand the issue..."
+                />
+              </label>
+
+              {reportSuccessMessage && (
+                <p style={{ fontSize: "0.82rem", color: "var(--accent)", margin: 0, fontWeight: 600 }}>
+                  {reportSuccessMessage}
+                </p>
+              )}
+
+              <div className="row" style={{ gap: 12, justifyContent: "flex-end", marginTop: 8 }}>
+                <button
+                  type="button"
+                  className="button-secondary"
+                  disabled={reportSubmitting}
+                  onClick={() => setActiveReportItem(null)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={reportSubmitting || !reportReason.trim()}
+                  className="button"
+                  style={{ background: "#c53030", borderColor: "#c53030", color: "#fff" }}
+                >
+                  {reportSubmitting ? "Submitting..." : "Submit Report"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </PortalShell>
   );
 }

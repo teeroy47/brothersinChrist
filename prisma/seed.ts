@@ -192,8 +192,9 @@ async function main() {
   });
 
   // 3. Seed ONLY ONE Super Admin User
-  // Login: admin@bic.app / admin1234
-  const superAdminPasswordHash = hashPassword("admin1234");
+  // Admin password conforms to ASVS v5.0.0-6.1.1 (>= 12 characters)
+  const superAdminPassword = process.env.ADMIN_INITIAL_PASSWORD || "AdminPassword2026!";
+  const superAdminPasswordHash = hashPassword(superAdminPassword);
 
   const superAdmin = await prisma.user.create({
     data: {

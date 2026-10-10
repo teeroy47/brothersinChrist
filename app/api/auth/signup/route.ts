@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import { db } from "@/src/lib/db";
 import { hashPassword } from "@/src/lib/auth-server";
+import { setSessionCookie } from "@/src/lib/auth-session";
 
+/**
+ * Public self-registration endpoint.
+ * Remediates SEC-06 (Race condition: first registrant auto-elevation to admin) and SEC-05 (weak passwords).
+ * Conforming to ASVS v5.0.0-6.1.1 (>= 12 characters) and ASVS v5.0.0-8.1.2.
+ */
 export async function POST(req: Request) {
   try {
     const { fullName, email, password, phone, city, church } = await req.json();
@@ -9,6 +15,14 @@ export async function POST(req: Request) {
     if (!fullName || !email || !password) {
       return NextResponse.json(
         { error: "Full name, email, and password are required." },
+        { status: 400 }
+      );
+    }
+
+    // ASVS v5.0.0-6.1.1 Minimum password length enforcement
+    if (String(password).length < 12) {
+      return NextResponse.json(
+        { error: "Password must be at least 12 characters." },
         { status: 400 }
       );
     }
@@ -27,19 +41,11 @@ export async function POST(req: Request) {
       );
     }
 
-    // Determine role & formation level
-    const userCount = await db.user.count();
-    const isFirstUser = userCount === 0;
-
-    // Fetch Level 1 and Level 5
-    const [level1, level5] = await Promise.all([
-      db.level.findUnique({ where: { levelNumber: 1 } }),
-      db.level.findUnique({ where: { levelNumber: 5 } }),
-    ]);
-
-    const roleId = isFirstUser ? 40 : 10; // 40 = ADMIN, 10 = MEMBER
-    const currentLevel = isFirstUser ? level5 ?? level1 : level1;
-    const currentLevelId = currentLevel?.id ?? null;
+    // INVARIANT: All public self-registrations receive MEMBER role (roleId = 10).
+    // Admins and leaders must be provisioned via database seed or verified admin console.
+    const roleId = 10;
+    const level1 = await db.level.findUnique({ where: { levelNumber: 1 } });
+    const currentLevelId = level1?.id ?? null;
 
     const trimmedName = String(fullName).trim();
     const firstName = trimmedName.split(" ")[0] || trimmedName;
@@ -89,7 +95,7 @@ export async function POST(req: Request) {
       email: newUser.email,
       name: newUser.profile?.fullName ?? newUser.email,
       firstName: newUser.profile?.firstName ?? "Brother",
-      role: newUser.role.code,         // e.g. "ADMIN", "MEMBER", "GROUP_LEADER"
+      role: newUser.role.code, // "MEMBER"
       levelNumber: newUser.currentLevel?.levelNumber ?? 1,
       levelTitle: newUser.currentLevel?.title ?? "Level 1: New Believers",
       groupName: newUser.memberships[0]?.group?.name ?? "General Brotherhood",
@@ -97,9 +103,12 @@ export async function POST(req: Request) {
       consistencyScore: newUser.growthScore?.overallConsistency ?? 100,
     };
 
-    return NextResponse.json({ user: sessionUser }, { status: 201 });
+    const res = NextResponse.json({ user: sessionUser }, { status: 201 });
+    // Issue HTTP-only, Secure, SameSite=Lax session cookie (ASVS v5.0.0-7.1.1)
+    setSessionCookie(res, sessionUser);
+    return res;
   } catch (error) {
-    console.error("Sign-up error:", error);
+    console.error("Sign-up failed (telemetry redacted)");
     return NextResponse.json(
       { error: "An unexpected error occurred during registration." },
       { status: 500 }

@@ -191,9 +191,6 @@ export default function MemberLevelsPage() {
                       : isCompleted
                       ? "1px solid rgba(31, 122, 104, 0.4)"
                       : undefined,
-                    background: isCurrent
-                      ? "rgba(255, 255, 255, 0.95)"
-                      : undefined,
                     padding: 20,
                   }}
                 >

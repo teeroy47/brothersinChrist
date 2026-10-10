@@ -163,8 +163,9 @@ export default function MemberDevotionsPage() {
                       cursor: "pointer",
                       textAlign: "left",
                       padding: 12,
-                      border: isSelected ? "2px solid var(--gold)" : undefined,
-                      background: isSelected ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.5)",
+                      border: isSelected ? "2px solid var(--gold)" : "1px solid var(--border)",
+                      background: isSelected ? "var(--surface)" : "var(--surface-muted)",
+                      borderRadius: "var(--radius-sm)",
                     }}
                   >
                     <div className="space-between">

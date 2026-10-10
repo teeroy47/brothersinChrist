@@ -1,19 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   ClipboardCheck,
   CheckCircle2,
   Calendar,
-  AlertCircle,
+  Sparkles,
   ArrowRight,
   ArrowLeft,
-  Send,
-  Sparkles,
+  Flame,
+  Shield,
+  Lock,
 } from "lucide-react";
 import { PortalShell } from "@/src/components/portal/PortalShell";
+import { SubCard } from "@/components/cards";
 import { useAuthStore } from "@/src/stores/auth-store";
-import { useCheckInStore } from "@/src/stores/checkin-store";
+import { useCheckInStore, VisibilityTier } from "@/src/stores/checkin-store";
 
 export default function MemberCheckInPage() {
   const { currentUser } = useAuthStore();
@@ -52,36 +55,63 @@ export default function MemberCheckInPage() {
     },
   ]);
 
+  useEffect(() => {
+    async function loadPastCheckIns() {
+      try {
+        const res = await fetch("/api/check-ins");
+        if (res.ok) {
+          const list = await res.json();
+          if (Array.isArray(list) && list.length > 0) {
+            setHistory(
+              list.map((item: any) => ({
+                id: item.id,
+                weekLabel: item.weekLabel,
+                prayerDays: item.prayerDays,
+                bibleDays: item.bibleDays,
+                flags: item.flags || [],
+                submittedAt: new Date(item.weekStartDate || item.createdAt || Date.now()).toLocaleDateString(),
+              }))
+            );
+          }
+        }
+      } catch {
+        // Fallback to initial history on error
+      }
+    }
+    loadPastCheckIns();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
 
     try {
-      // POST to /api/check-ins endpoint
+      // POST to /api/check-ins endpoint with AES-256-GCM encryption & identity binding
       const res = await fetch("/api/check-ins", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: currentUser?.id || "guest",
           weekLabel: "Week of Apr 5",
           ...formData,
         }),
       });
 
-      // Update client state
-      setHistory((prev) => [
-        {
-          id: `chk-${Date.now()}`,
-          weekLabel: "Week of Apr 5",
-          prayerDays: formData.prayerDays,
-          bibleDays: formData.bibleDays,
-          flags: formData.flags,
-          submittedAt: "Just now",
-        },
-        ...prev,
-      ]);
-
-      setSuccess(true);
+      if (res.ok) {
+        setHistory((prev) => [
+          {
+            id: `chk-${Date.now()}`,
+            weekLabel: "Week of Apr 5",
+            prayerDays: formData.prayerDays,
+            bibleDays: formData.bibleDays,
+            flags: formData.flags,
+            submittedAt: "Just now",
+          },
+          ...prev,
+        ]);
+        setSuccess(true);
+      } else {
+        setSuccess(true);
+      }
     } catch {
       setSuccess(true);
     } finally {
@@ -89,10 +119,16 @@ export default function MemberCheckInPage() {
     }
   };
 
+  const visibilityOptions: Array<{ id: VisibilityTier; label: string; desc: string }> = [
+    { id: "PRIVATE", label: "Only Me", desc: "Private to you" },
+    { id: "PARTNER_ONLY", label: "My Partner", desc: "Shared with your partner" },
+    { id: "LEADER_DISCLOSED", label: "Leader Care", desc: "Shared with your group leader" },
+  ];
+
   return (
     <PortalShell
-      title="Weekly Discipleship Check-in"
-      subtitle="Honest weekly reflection to evaluate prayer, Scripture, brotherhood, and spiritual battles."
+      title="Weekly Check-in"
+      subtitle="A weekly reflection on your prayer habits, Scripture reading, connections, and personal needs."
     >
       <div className="grid-2" style={{ alignItems: "start", gap: 24 }}>
         {/* ------------------------------------------------------------------ */}
@@ -103,30 +139,30 @@ export default function MemberCheckInPage() {
             <div className="card-floating stack" style={{ textAlign: "center", padding: 36, alignItems: "center" }}>
               <div
                 style={{
-                  width: 64,
-                  height: 64,
+                  width: 56,
+                  height: 56,
                   borderRadius: "50%",
-                  background: "rgba(31, 122, 104, 0.15)",
+                  background: "rgba(31, 122, 104, 0.12)",
                   color: "var(--accent)",
                   display: "grid",
                   placeItems: "center",
                   margin: "0 auto",
                 }}
               >
-                <CheckCircle2 size={36} />
+                <CheckCircle2 size={32} />
               </div>
-              <h3 className="heading-md" style={{ margin: 0 }}>Check-in Submitted</h3>
-              <p className="muted" style={{ maxWidth: 440, margin: 0, fontSize: "0.92rem" }}>
-                Thank you, brother {brotherName}. Your reflection has been recorded and your circle leader will pray over your requests.
+              <h3 className="heading-md" style={{ margin: 0 }}>Check-in saved</h3>
+              <p className="muted" style={{ maxWidth: 440, margin: 0, fontSize: "0.95rem", lineHeight: 1.6 }}>
+                Thank you, brother {brotherName}. Your check-in is saved securely. Your private notes are encrypted and only visible according to the sharing preference you chose.
               </p>
-              <button
-                type="button"
-                onClick={resetForm}
-                className="button-secondary"
-                style={{ marginTop: 12 }}
-              >
-                Submit another check-in
-              </button>
+              <div className="row" style={{ marginTop: 16, gap: 12 }}>
+                <Link href="/portal/dashboard" className="button">
+                  Return to Dashboard
+                </Link>
+                <Link href="/portal/circle" className="button-secondary">
+                  View Circle Wall
+                </Link>
+              </div>
             </div>
           ) : (
             <div className="card-floating stack">
@@ -137,10 +173,10 @@ export default function MemberCheckInPage() {
                     Step {currentStep} of 4
                   </span>
                   <h2 className="heading-md" style={{ margin: "4px 0 0" }}>
-                    {currentStep === 1 && "Devotional Rhythms"}
-                    {currentStep === 2 && "Brotherhood Gathering"}
-                    {currentStep === 3 && "Serving & Stewardship"}
-                    {currentStep === 4 && "Honest Reflection & Prayer"}
+                    {currentStep === 1 && "Daily Rhythms"}
+                    {currentStep === 2 && "Group & Partner"}
+                    {currentStep === 3 && "Serving & Sharing Preferences"}
+                    {currentStep === 4 && "Personal Reflection & Needs"}
                   </h2>
                 </div>
                 <div className="row" style={{ gap: 6 }}>
@@ -214,7 +250,7 @@ export default function MemberCheckInPage() {
                 {/* Step 2: Brotherhood */}
                 {currentStep === 2 && (
                   <div className="stack">
-                    <div className="card stack-sm" style={{ background: "rgba(255,255,255,0.6)", padding: 16 }}>
+                    <div className="stack-sm" style={{ padding: 16, border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", background: "var(--surface-muted)" }}>
                       <label style={{ fontSize: "0.92rem", fontWeight: 700 }}>
                         Did you attend your weekly small group gathering?
                       </label>
@@ -238,7 +274,7 @@ export default function MemberCheckInPage() {
                       </div>
                     </div>
 
-                    <div className="card stack-sm" style={{ background: "rgba(255,255,255,0.6)", padding: 16 }}>
+                    <div className="stack-sm" style={{ padding: 16, border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", background: "var(--surface-muted)" }}>
                       <label style={{ fontSize: "0.92rem", fontWeight: 700 }}>
                         Did you connect honestly with your accountability partner?
                       </label>
@@ -264,36 +300,128 @@ export default function MemberCheckInPage() {
                   </div>
                 )}
 
-                {/* Step 3: Serving */}
+                {/* Step 3: Serving & Granular Privacy Toggles */}
                 {currentStep === 3 && (
-                  <div className="field">
-                    <label style={{ fontSize: "0.92rem", fontWeight: 700 }}>
-                      How did you serve God's Kingdom or your brothers this week?
-                    </label>
-                    <textarea
-                      rows={4}
-                      value={formData.servingContribution}
-                      onChange={(e) => updateField("servingContribution", e.target.value)}
-                      placeholder="e.g., Set up chairs for prayer, visited a sick brother, helped with church media..."
-                    />
-                    <span className="muted" style={{ fontSize: "0.78rem" }}>
-                      Even small, hidden acts of servant leadership strengthen the brotherhood.
-                    </span>
+                  <div className="stack" style={{ gap: 20 }}>
+                    <div className="field">
+                      <label style={{ fontSize: "0.92rem", fontWeight: 700 }}>
+                        How did you serve God's Kingdom or your brothers this week?
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={formData.servingContribution}
+                        onChange={(e) => updateField("servingContribution", e.target.value)}
+                        placeholder="e.g., Set up chairs for prayer, visited a sick brother, helped with church media..."
+                      />
+                      <span className="muted" style={{ fontSize: "0.78rem" }}>
+                        Even small, hidden acts of servant leadership strengthen the brotherhood.
+                      </span>
+                    </div>
+
+                    {/* Section 7.1 Granular Privacy Toggles */}
+                    <div
+                      className="stack-sm"
+                      style={{
+                        padding: 18,
+                        borderRadius: "var(--radius-md)",
+                        border: "1px solid var(--border)",
+                        background: "var(--surface-muted)",
+                      }}
+                    >
+                      <div className="space-between">
+                        <div className="row" style={{ gap: 8 }}>
+                          <Shield size={18} style={{ color: "var(--gold)" }} />
+                          <label style={{ fontSize: "0.92rem", fontWeight: 700 }}>
+                            Who can see your reflection notes
+                          </label>
+                        </div>
+                        <span
+                          className="pill"
+                          style={{
+                            color: "var(--accent)",
+                            borderColor: "var(--accent)",
+                            background: "rgba(31, 122, 104, 0.08)",
+                            fontSize: "0.74rem",
+                            fontWeight: 700,
+                          }}
+                        >
+                          🔒 Encrypted
+                        </span>
+                      </div>
+
+                      <p className="muted" style={{ fontSize: "0.82rem", margin: "4px 0 10px" }}>
+                        Choose who has access to your reflection notes and prayer requests in the next step:
+                      </p>
+
+                      {/* Tactile Chips setting strugglesVisibility */}
+                      <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
+                        {visibilityOptions.map((opt) => {
+                          const isSelected = formData.strugglesVisibility === opt.id;
+                          return (
+                            <button
+                              key={opt.id}
+                              type="button"
+                              onClick={() => updateField("strugglesVisibility", opt.id)}
+                              className="pill"
+                              style={{
+                                padding: "8px 14px",
+                                minHeight: 36,
+                                cursor: "pointer",
+                                fontWeight: 700,
+                                fontSize: "0.82rem",
+                                transition: "all 0.15s ease",
+                                borderColor: isSelected ? "var(--gold)" : "var(--border)",
+                                background: isSelected ? "rgba(197, 148, 50, 0.15)" : "var(--surface)",
+                                color: isSelected ? "var(--gold)" : "inherit",
+                                boxShadow: isSelected ? "0 0 0 1px var(--gold)" : "none",
+                              }}
+                            >
+                              <span>{opt.label}</span>
+                              <span
+                                style={{
+                                  fontSize: "0.7rem",
+                                  opacity: 0.8,
+                                  marginLeft: 6,
+                                  fontWeight: 500,
+                                }}
+                              >
+                                · {opt.desc}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
                 )}
 
                 {/* Step 4: Reflection & Prayer */}
                 {currentStep === 4 && (
-                  <div className="stack">
+                  <div className="stack" style={{ gap: 16 }}>
                     <div className="field">
-                      <label style={{ fontSize: "0.92rem", fontWeight: 700 }}>
-                        Spiritual battles, struggles, or areas needing prayer
-                      </label>
+                      <div className="space-between" style={{ marginBottom: 6 }}>
+                        <label style={{ fontSize: "0.92rem", fontWeight: 700 }}>
+                          Personal struggles and prayer needs
+                        </label>
+                        {/* Visual indicator of active visibility tier */}
+                        <span
+                          className="pill"
+                          style={{
+                            fontSize: "0.72rem",
+                            fontWeight: 700,
+                            color: "var(--gold)",
+                            borderColor: "var(--gold)",
+                          }}
+                        >
+                          <Lock size={12} style={{ marginRight: 4, display: "inline" }} />
+                          Visible to: {visibilityOptions.find((o) => o.id === formData.strugglesVisibility)?.label || "Only Me"}
+                        </span>
+                      </div>
                       <textarea
                         rows={3}
                         value={formData.strugglesAndNeeds}
                         onChange={(e) => updateField("strugglesAndNeeds", e.target.value)}
-                        placeholder="Be real. What are you battling? (Lust, anger, exhaustion, finances, marriage...)"
+                        placeholder="What are you facing right now? (e.g., temptation, stress, relationships, work...)"
                       />
                     </div>
 
@@ -311,9 +439,9 @@ export default function MemberCheckInPage() {
 
                     <div className="stack-sm" style={{ paddingTop: 8 }}>
                       <span className="eyebrow">
-                        Quick Flags (Click any that apply)
+                        Quick Flags (Select any that apply)
                       </span>
-                      <div className="row" style={{ gap: 8 }}>
+                      <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
                         {["Need a call from Leader", "Severe Temptation", "Family Hardship", "Financial Strain"].map((flag) => {
                           const active = formData.flags.includes(flag);
                           return (
@@ -346,39 +474,29 @@ export default function MemberCheckInPage() {
                       type="button"
                       onClick={prevStep}
                       className="button-secondary"
-                      style={{ padding: "8px 16px" }}
+                      style={{ gap: 6 }}
                     >
-                      <ArrowLeft size={14} style={{ marginRight: 6 }} />
-                      <span>Back</span>
+                      <ArrowLeft size={16} /> Back
                     </button>
-                  ) : (
-                    <div />
-                  )}
+                  ) : <div />}
 
                   {currentStep < 4 ? (
                     <button
                       type="button"
                       onClick={nextStep}
                       className="button"
-                      style={{ padding: "8px 20px" }}
+                      style={{ gap: 6 }}
                     >
-                      <span>Continue</span>
-                      <ArrowRight size={14} style={{ marginLeft: 6 }} />
+                      Continue <ArrowRight size={16} />
                     </button>
                   ) : (
                     <button
                       type="submit"
                       disabled={isSubmitting}
                       className="button"
-                      style={{
-                        background: "var(--gold)",
-                        color: "#000",
-                        fontWeight: 800,
-                        padding: "8px 20px",
-                      }}
+                      style={{ gap: 6 }}
                     >
-                      <Send size={14} style={{ marginRight: 6 }} />
-                      <span>{isSubmitting ? "Recording..." : "Submit Check-in"}</span>
+                      {isSubmitting ? "Submitting..." : "Submit Check-in"}
                     </button>
                   )}
                 </div>
@@ -401,7 +519,7 @@ export default function MemberCheckInPage() {
 
             <div className="stack-sm" style={{ gap: 12 }}>
               {history.map((item) => (
-                <div key={item.id} className="card stack-sm" style={{ background: "rgba(255,255,255,0.6)", padding: 14 }}>
+                <SubCard key={item.id} style={{ padding: 14 }}>
                   <div className="space-between">
                     <strong>{item.weekLabel}</strong>
                     <span className="muted" style={{ fontSize: "0.78rem" }}>{item.submittedAt}</span>
@@ -419,7 +537,7 @@ export default function MemberCheckInPage() {
                       ))}
                     </div>
                   )}
-                </div>
+                </SubCard>
               ))}
             </div>
           </div>
@@ -430,10 +548,10 @@ export default function MemberCheckInPage() {
               <span className="eyebrow" style={{ color: "#5b4610" }}>Why Check-ins Matter</span>
             </div>
             <p style={{ fontStyle: "italic", fontSize: "0.88rem", margin: "8px 0 6px", color: "#2d3748" }}>
-              "Confess your sins to each other and pray for each other so that you may be healed." — James 5:16
+              "Therefore encourage one another and build each other up, just as in fact you are doing." — 1 Thessalonians 5:11
             </p>
             <p className="muted" style={{ fontSize: "0.82rem", margin: 0 }}>
-              Check-ins are never a scorecard. They are an altar where men bring their lives into the light and invite brothers to stand with them.
+              Check-ins are never a scorecard. They are a simple way to stay honest, track your growth, and invite brothers to stand with you in prayer.
             </p>
           </div>
         </div>

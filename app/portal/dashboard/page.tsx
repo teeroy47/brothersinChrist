@@ -12,6 +12,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { PortalShell } from "@/src/components/portal/PortalShell";
+import { MetricCard, SubCard } from "@/components/cards";
 import { useAuthStore } from "@/src/stores/auth-store";
 
 export default function MemberDashboardPage() {
@@ -26,25 +27,23 @@ export default function MemberDashboardPage() {
     >
       <div className="stack" style={{ gap: 24 }}>
         {/* -------------------------------------------------------------------- */}
-        {/* 1. Daily Scripture Anchor & Devotional Focus Section (Flat)          */}
+        {/* 1. Daily Scripture Anchor Section (Flat Hero Header)                */}
         {/* -------------------------------------------------------------------- */}
         <div className="section-flat-dark stack">
           <div className="space-between" style={{ alignItems: "flex-start" }}>
             <div className="stack-sm" style={{ maxWidth: 680 }}>
-              <div className="row" style={{ gap: 8 }}>
-                <span className="data-label" style={{ color: "var(--gold)" }}>
-                  Proverbs 27:17 · Core Scripture
-                </span>
-              </div>
+              <span className="eyebrow" style={{ color: "var(--gold)" }}>
+                Proverbs 27:17 · Core Scripture
+              </span>
               <h2 className="heading-lg" style={{ color: "#ffffff" }}>
                 "As iron sharpens iron, so one man sharpens another."
               </h2>
-              <p style={{ color: "rgba(255,255,255,0.8)", margin: 0, fontSize: "0.95rem", lineHeight: 1.6 }}>
+              <p style={{ color: "rgba(255, 255, 255, 0.85)", margin: 0, fontSize: "0.95rem", lineHeight: 1.6 }}>
                 Discipleship is not solitary. God forms kingdom men through honest brotherhood, daily surrender, and mutual strengthening.
               </p>
             </div>
 
-            <div className="row" style={{ gap: 10, alignSelf: "flex-start" }}>
+            <div className="row" style={{ gap: 10, alignSelf: "flex-start", marginTop: 8 }}>
               <Link
                 href="/portal/check-in"
                 className="button"
@@ -57,9 +56,9 @@ export default function MemberDashboardPage() {
                 href="/portal/devotions"
                 className="button-secondary"
                 style={{
-                  background: "rgba(255,255,255,0.12)",
-                  color: "#fff",
-                  borderColor: "rgba(255,255,255,0.25)"
+                  background: "rgba(255, 255, 255, 0.1)",
+                  color: "#ffffff",
+                  borderColor: "rgba(255, 255, 255, 0.22)",
                 }}
               >
                 <BookOpen size={16} style={{ color: "var(--gold)" }} />
@@ -70,78 +69,45 @@ export default function MemberDashboardPage() {
         </div>
 
         {/* -------------------------------------------------------------------- */}
-        {/* 2. Discipleship Indicators (Discrete Repeatable Metric Cards)        */}
+        {/* 2. Discipleship Indicators (Unified Shared MetricCard Primitives)     */}
         {/* -------------------------------------------------------------------- */}
         <div className="grid-4">
-          <div className="card stack-sm">
-            <div className="space-between">
-              <span className="data-label">Consistency</span>
-              <span className="pill" style={{ padding: "2px 8px", minHeight: 24, fontSize: "0.72rem", color: "var(--accent)" }}>
-                Strong
-              </span>
-            </div>
-            <strong className="data-value">
-              {consistencyScore}%
-            </strong>
-            <div className="progress">
-              <span style={{ width: `${consistencyScore}%` }} />
-            </div>
-            <span className="data-detail">
-              Active rhythm across disciplines
-            </span>
-          </div>
-
-          <div className="card stack-sm">
-            <div className="space-between">
-              <span className="data-label">Prayer Rhythm</span>
-              <CheckCircle2 size={16} style={{ color: "var(--accent)" }} />
-            </div>
-            <strong className="data-value">
-              5 / 7 days
-            </strong>
-            <div className="progress">
-              <span style={{ width: "71%" }} />
-            </div>
-            <span className="data-detail">
-              Target: Daily communion
-            </span>
-          </div>
-
-          <div className="card stack-sm">
-            <div className="space-between">
-              <span className="data-label">Scripture Study</span>
-              <CheckCircle2 size={16} style={{ color: "var(--accent)" }} />
-            </div>
-            <strong className="data-value">
-              4 / 7 days
-            </strong>
-            <div className="progress">
-              <span style={{ width: "57%" }} />
-            </div>
-            <span className="data-detail">
-              Proverbs 30-Day Plan
-            </span>
-          </div>
-
-          <div className="card stack-sm">
-            <div className="space-between">
-              <span className="data-label">Attendance</span>
-              <Users size={16} style={{ color: "var(--accent)" }} />
-            </div>
-            <strong className="data-value">
-              100%
-            </strong>
-            <div className="progress">
-              <span style={{ width: "100%" }} />
-            </div>
-            <span className="data-detail">
-              Present last 4 circles
-            </span>
-          </div>
+          <MetricCard
+            label="Consistency"
+            value={`${consistencyScore}%`}
+            badge="Steady"
+            progress={consistencyScore}
+            detail="Active rhythm across disciplines"
+            tone="healthy"
+          />
+          <MetricCard
+            label="Prayer Rhythm"
+            value="5 / 7 days"
+            progress={71}
+            detail="Target: Daily communion"
+            icon={<CheckCircle2 size={18} />}
+            tone="healthy"
+          />
+          <MetricCard
+            label="Scripture Study"
+            value="4 / 7 days"
+            progress={57}
+            detail="Proverbs 30-Day Plan"
+            icon={<BookOpen size={18} />}
+            tone="healthy"
+          />
+          <MetricCard
+            label="Attendance"
+            value="100%"
+            progress={100}
+            detail="Present last 4 circles"
+            icon={<Users size={18} />}
+            tone="healthy"
+          />
         </div>
 
         {/* -------------------------------------------------------------------- */}
-        {/* 3. My Brotherhood Circle & Upcoming Gatherings                       */}
+        {/* 3. My Brotherhood Circle & Upcoming Gatherings (Non-Nested Cards)    */}
         {/* -------------------------------------------------------------------- */}
         <div className="grid-2">
           {/* Circle Card */}
@@ -155,39 +121,36 @@ export default function MemberDashboardPage() {
                   {groupName}
                 </h3>
               </div>
-              <Link href="/portal/circle" className="pill" style={{ fontSize: "0.78rem", minHeight: 32 }}>
+              <Link href="/portal/circle" className="pill" style={{ fontSize: "0.8rem", minHeight: 34 }}>
                 <span>Circle Wall</span>
                 <ArrowRight size={14} />
               </Link>
             </div>
 
             <div className="grid-2" style={{ gap: 12 }}>
-              <div className="card stack-sm" style={{ background: "rgba(255,255,255,0.6)", padding: 14 }}>
-                <span className="eyebrow">Circle Leader</span>
-                <strong>Simba Ndlovu</strong>
-                <span className="muted" style={{ fontSize: "0.78rem" }}>
-                  Financial Analyst · Married
-                </span>
-              </div>
-              <div className="card stack-sm" style={{ background: "rgba(255,255,255,0.6)", padding: 14 }}>
-                <span className="eyebrow">Accountability Brother</span>
-                <strong>Simba Ndlovu</strong>
-                <span style={{ fontSize: "0.78rem", color: "var(--accent)" }}>
-                  Connected this week
-                </span>
-              </div>
+              <SubCard
+                label="Circle Leader"
+                title="Simba Ndlovu"
+                detail="Financial Analyst · Married"
+              />
+              <SubCard
+                label="Accountability Brother"
+                title="Tawanda Moyo"
+                detail="Software Engineer · Single"
+                status="Connected this week"
+              />
             </div>
 
-            <div className="scripture-lockup" style={{ padding: 14 }}>
+            <div className="scripture-lockup" style={{ padding: 16 }}>
               <div className="space-between">
-                <span className="eyebrow" style={{ color: "#5b4610" }}>
+                <span className="eyebrow" style={{ color: "var(--gold)" }}>
                   Current Circle Prayer Focus
                 </span>
                 <span className="muted" style={{ fontSize: "0.75rem" }}>
                   Updated 2 days ago
                 </span>
               </div>
-              <p style={{ margin: "6px 0 0", fontSize: "0.88rem", fontStyle: "italic", color: "#374151" }}>
+              <p style={{ margin: "8px 0 0", fontSize: "0.9rem", fontStyle: "italic", color: "var(--foreground)" }}>
                 "Strength and moral courage for working fathers, and employment provision for young brothers navigating careers."
               </p>
             </div>
@@ -210,7 +173,7 @@ export default function MemberDashboardPage() {
                   <Calendar size={20} style={{ color: "var(--gold)", marginTop: 2 }} />
                   <div>
                     <strong style={{ fontSize: "0.95rem" }}>Thursday, 18:30 CAT</strong>
-                    <p className="muted" style={{ margin: 0, fontSize: "0.8rem" }}>
+                    <p className="muted" style={{ margin: 0, fontSize: "0.82rem" }}>
                       In 2 days
                     </p>
                   </div>
@@ -219,7 +182,7 @@ export default function MemberDashboardPage() {
                   <Clock size={20} style={{ color: "var(--gold)", marginTop: 2 }} />
                   <div>
                     <strong style={{ fontSize: "0.95rem" }}>Central Sanctuary & Online</strong>
-                    <p className="muted" style={{ margin: 0, fontSize: "0.8rem" }}>
+                    <p className="muted" style={{ margin: 0, fontSize: "0.82rem" }}>
                       Physical + Streaming Room
                     </p>
                   </div>

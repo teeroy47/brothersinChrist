@@ -18,6 +18,7 @@ import {
   Shield,
   Layers,
 } from "lucide-react";
+import { MetricCard, SubCard } from "@/components/cards";
 import { useAuthStore } from "@/src/stores/auth-store";
 
 interface BrotherRecord {
@@ -51,7 +52,7 @@ export default function LeadershipOverviewPage() {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    password: "bic" + Math.floor(1000 + Math.random() * 9000),
+    password: "bic2026Pass" + Math.floor(1000 + Math.random() * 9000),
     role: "MEMBER",
     levelNumber: 1,
     phone: "",
@@ -103,7 +104,7 @@ export default function LeadershipOverviewPage() {
       setFormData({
         fullName: "",
         email: "",
-        password: "bic" + Math.floor(1000 + Math.random() * 9000),
+        password: "bic2026Pass" + Math.floor(1000 + Math.random() * 9000),
         role: "MEMBER",
         levelNumber: 1,
         phone: "",
@@ -171,47 +172,34 @@ export default function LeadershipOverviewPage() {
       {/* 1. Real Database Overview Metrics                                  */}
       {/* ------------------------------------------------------------------ */}
       <div className="grid-4">
-        <div className="card stack-sm">
-          <div className="space-between">
-            <span className="data-label">Registered Brothers</span>
-            <Users size={16} style={{ color: "var(--gold)" }} />
-          </div>
-          <strong className="data-value">{loading ? "..." : totalBrothers}</strong>
-          <span className="data-detail" style={{ color: "var(--accent)", fontWeight: 700 }}>
-            Active
-          </span>
-        </div>
-
-        <div className="card stack-sm">
-          <div className="space-between">
-            <span className="data-label">Leaders & Admins</span>
-            <Shield size={16} style={{ color: "var(--gold)" }} />
-          </div>
-          <strong className="data-value">{loading ? "..." : leadersCount}</strong>
-          <span className="data-detail">Shepherding brotherhood</span>
-        </div>
-
-        <div className="card stack-sm">
-          <div className="space-between">
-            <span className="data-label">New Believers</span>
-            <Layers size={16} style={{ color: "var(--gold)" }} />
-          </div>
-          <strong className="data-value">{loading ? "..." : newBelieversCount}</strong>
-          <span className="data-detail">Level 1 formation stage</span>
-        </div>
-
-        <div className="card stack-sm">
-          <div className="space-between">
-            <span className="data-label">Avg Consistency</span>
-            <Sparkles size={16} style={{ color: "var(--accent)" }} />
-          </div>
-          <strong className="data-value" style={{ color: "var(--accent)" }}>
-            {loading ? "..." : `${avgConsistency}%`}
-          </strong>
-          <span className="data-detail" style={{ color: "var(--accent)", fontWeight: 700 }}>
-            Discipline rhythm
-          </span>
-        </div>
+        <MetricCard
+          label="Registered Brothers"
+          value={loading ? "..." : totalBrothers}
+          icon={<Users size={18} />}
+          detail="Active accounts"
+          tone="healthy"
+        />
+        <MetricCard
+          label="Leaders & Admins"
+          value={loading ? "..." : leadersCount}
+          icon={<Shield size={18} />}
+          detail="Shepherding brotherhood"
+          tone="steady"
+        />
+        <MetricCard
+          label="New Believers"
+          value={loading ? "..." : newBelieversCount}
+          icon={<Layers size={18} />}
+          detail="Level 1 formation stage"
+          tone="steady"
+        />
+        <MetricCard
+          label="Avg Consistency"
+          value={loading ? "..." : `${avgConsistency}%`}
+          icon={<Sparkles size={18} />}
+          detail="Discipline rhythm"
+          tone="healthy"
+        />
       </div>
 
       {/* ------------------------------------------------------------------ */}
@@ -379,11 +367,9 @@ export default function LeadershipOverviewPage() {
 
         <div className="stack-sm" style={{ gap: 12 }}>
           {followUpBrothers.map((brother) => (
-            <div
+            <SubCard
               key={brother.id}
-              className="card stack-sm"
               style={{
-                background: "rgba(255, 255, 255, 0.7)",
                 padding: 16,
                 border: "1px solid rgba(197, 48, 48, 0.25)",
               }}
@@ -427,7 +413,7 @@ export default function LeadershipOverviewPage() {
                   </button>
                 </div>
               </div>
-            </div>
+            </SubCard>
           ))}
         </div>
       </div>
@@ -539,7 +525,7 @@ export default function LeadershipOverviewPage() {
                       padding: "10px",
                       borderRadius: 10,
                       border: "1px solid var(--border)",
-                      background: "rgba(255,255,255,0.9)",
+                      background: "var(--surface)",
                     }}
                   >
                     <option value="MEMBER">Member</option>
@@ -559,7 +545,7 @@ export default function LeadershipOverviewPage() {
                       padding: "10px",
                       borderRadius: 10,
                       border: "1px solid var(--border)",
-                      background: "rgba(255,255,255,0.9)",
+                      background: "var(--surface)",
                     }}
                   >
                     <option value={1}>Level 1: New Believers</option>

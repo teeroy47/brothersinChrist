@@ -14,6 +14,7 @@ import {
   User,
   ShieldCheck,
   LogOut,
+  MoreHorizontal,
 } from "lucide-react";
 
 import { BrandMark } from "@/components/brand-mark";
@@ -33,6 +34,7 @@ const navItems: Array<{ href: string; label: string; icon: LucideIcon }> = [
   { href: "/portal/devotions", label: "Devotions", icon: BookOpenCheck },
   { href: "/portal/attendance",label: "Attendance",icon: CalendarCheck },
   { href: "/portal/profile",   label: "Profile",   icon: User },
+  { href: "/portal/settings/privacy", label: "Privacy & Sharing", icon: ShieldCheck },
 ];
 
 export function PortalShell({ children, title, subtitle }: PortalShellProps) {
@@ -182,6 +184,7 @@ const SHEET_NAV = [
   { href: "/portal/devotions",  label: "Devotions",  icon: BookOpenCheck },
   { href: "/portal/attendance", label: "Attendance", icon: CalendarCheck },
   { href: "/portal/profile",    label: "Profile",    icon: User          },
+  { href: "/portal/settings/privacy", label: "Privacy & Sharing", icon: ShieldCheck },
 ];
 
 function MobileNav({
@@ -204,6 +207,7 @@ function MobileNav({
     pathname.startsWith("/portal/devotions") ||
     pathname.startsWith("/portal/attendance") ||
     pathname.startsWith("/portal/profile") ||
+    pathname.startsWith("/portal/settings") ||
     pathname.startsWith("/leadership");
 
   return (
@@ -240,13 +244,7 @@ function MobileNav({
           style={{ background: "none", border: "none", cursor: "pointer", width: "100%", padding: 0 }}
         >
           <span className="mobile-nav-icon" aria-hidden="true">
-            {/* Three-dot horizontal icon */}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              strokeWidth={moreActive || sheetOpen ? 2.4 : 2} strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="5"  cy="12" r="1.5" />
-              <circle cx="12" cy="12" r="1.5" />
-              <circle cx="19" cy="12" r="1.5" />
-            </svg>
+            <MoreHorizontal size={18} strokeWidth={moreActive || sheetOpen ? 2.4 : 2} />
           </span>
           <span className="mobile-nav-label">More</span>
         </button>

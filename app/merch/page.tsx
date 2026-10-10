@@ -38,16 +38,15 @@ export default function MerchPage() {
       <main>
         <section className="section">
           <div className="container stack">
-            <div className="card card-dark stack merch-hero">
-              <span className="eyebrow" style={{ color: "rgba(255,255,255,.65)" }}>Merch</span>
+            <div className="section-flat-dark stack merch-hero">
               <h1 className="heading-xl">Wear the brotherhood. Carry the core scripture.</h1>
-              <p style={{ color: "rgba(255,255,255,.76)", margin: 0 }}>
+              <p style={{ color: "rgba(255,255,255,.82)", margin: 0, fontSize: "1.05rem", lineHeight: 1.6 }}>
                 BIC merch is a visible reminder that kingdom men are sharpened daily into the full image of Christ.
               </p>
               <div className="scripture-lockup">
-                <span className="eyebrow" style={{ color: "rgba(255,255,255,.68)" }}>Proverbs 27:17 Core Scripture</span>
+                <span className="eyebrow" style={{ color: "var(--gold)" }}>Proverbs 27:17 Core Scripture</span>
                 <strong>Iron sharpens iron.</strong>
-                <p style={{ color: "rgba(255,255,255,.76)", margin: "8px 0 0" }}>
+                <p style={{ color: "rgba(255,255,255,.82)", margin: "8px 0 0" }}>
                   "As iron sharpens iron, so one man sharpens another."
                 </p>
               </div>

@@ -3,10 +3,6 @@
 import { useEffect } from "react";
 
 const revealSelector = [
-  ".card",
-  ".metric",
-  ".scripture-lockup",
-  ".merch-preview",
   ".landing-section-header",
   ".landing-pillar",
   ".landing-path-step",
@@ -27,11 +23,15 @@ export function ScrollReveal() {
       return;
     }
 
-    root.classList.add("scroll-reveal-ready");
-
     const targets = Array.from(document.querySelectorAll<HTMLElement>(revealSelector)).filter((element) => {
       return !element.closest(".mobile-nav") && !element.closest(".sidebar");
     });
+
+    if (targets.length === 0) {
+      return;
+    }
+
+    root.classList.add("scroll-reveal-ready");
 
     targets.forEach((element, index) => {
       element.classList.add("reveal-on-scroll");

@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import { db } from "@/src/lib/db";
 import { verifyPassword } from "@/src/lib/auth-server";
+import { setSessionCookie } from "@/src/lib/auth-session";
 
+/**
+ * Hardened sign-in handler.
+ * Verifies credentials against PBKDF2 600,000 rounds and issues HTTP-only session cookie.
+ * Conforming to ASVS v5.0.0-6.2.1, ASVS v5.0.0-7.1.1, and W3C §2.3.
+ */
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
@@ -30,7 +36,7 @@ export async function POST(req: Request) {
 
     if (!user) {
       return NextResponse.json(
-        { error: "No account found with this email address." },
+        { error: "Invalid email or password." },
         { status: 401 }
       );
     }
@@ -38,7 +44,7 @@ export async function POST(req: Request) {
     const isValid = verifyPassword(password, user.passwordHash);
     if (!isValid) {
       return NextResponse.json(
-        { error: "Incorrect password. Please try again." },
+        { error: "Invalid email or password." },
         { status: 401 }
       );
     }
@@ -48,7 +54,7 @@ export async function POST(req: Request) {
       email: user.email,
       name: user.profile?.fullName ?? user.email,
       firstName: user.profile?.firstName ?? "Brother",
-      role: user.role.code,           // e.g. "ADMIN", "MEMBER", "GROUP_LEADER"
+      role: user.role.code, // e.g. "ADMIN", "MEMBER", "GROUP_LEADER"
       levelNumber: user.currentLevel?.levelNumber ?? 1,
       levelTitle: user.currentLevel?.title ?? "Level 1: New Believers",
       groupName: user.memberships[0]?.group?.name ?? "General Brotherhood",
@@ -56,9 +62,12 @@ export async function POST(req: Request) {
       consistencyScore: user.growthScore?.overallConsistency ?? 100,
     };
 
-    return NextResponse.json({ user: sessionUser });
-  } catch (error) {
-    console.error("Sign-in error:", error);
+    const res = NextResponse.json({ user: sessionUser });
+    // Issue HTTP-only, Secure, SameSite=Lax cookie (ASVS v5.0.0-7.1.1)
+    setSessionCookie(res, sessionUser);
+    return res;
+  } catch {
+    console.error("Sign-in attempt failed (telemetry redacted)");
     return NextResponse.json(
       { error: "An unexpected error occurred during sign-in." },
       { status: 500 }

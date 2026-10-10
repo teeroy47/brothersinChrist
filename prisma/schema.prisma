@@ -137,6 +137,9 @@ model User {
   userLevelReviews         LevelReview[]          @relation("UserLevelReviews")
   reviewerLevelReviews     LevelReview[]          @relation("ReviewerLevelReviews")
   journeyStageHistory      JourneyStageHistory[]
+  consents                 UserConsent[]
+  reportsFiled             AbuseReport[]          @relation("ReporterAbuse")
+  reportsAgainst           AbuseReport[]          @relation("ReportedAbuse")
 
   @@index([journeyStageId])
   @@map("users")
@@ -217,22 +220,32 @@ model DailyPractice {
   @@map("daily_practices")
 }
 
+enum VisibilityTier {
+  PRIVATE              // Author only
+  PARTNER_ONLY         // Author + designated AccountabilityPartner
+  LEADER_DISCLOSED     // Author + Group Leader
+  CIRCLE_SHARED        // Entire small group
+}
+
 model CheckIn {
-  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId              String    @db.Uuid
-  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                  String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId              String         @db.Uuid
+  user                User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   weekLabel           String
-  weekStartDate       DateTime  @db.Date
-  prayerDays          Int       @default(0)
-  bibleDays           Int       @default(0)
-  attendedMeeting     Boolean   @default(false)
-  metAccountability   Boolean   @default(false)
-  servingContribution String?   @db.Text
-  strugglesAndNeeds   String?   @db.Text
-  praiseReport        String?   @db.Text
-  flags               String[]  @default([])
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  weekStartDate       DateTime       @db.Date
+  prayerDays          Int            @default(0)
+  bibleDays           Int            @default(0)
+  attendedMeeting     Boolean        @default(false)
+  metAccountability   Boolean        @default(false)
+  servingContribution String?        @db.Text
+  strugglesAndNeeds   String?        @db.Text
+  strugglesVisibility VisibilityTier @default(PRIVATE)
+  praiseReport        String?        @db.Text
+  praiseVisibility    VisibilityTier @default(CIRCLE_SHARED)
+  flags               String[]       @default([])
+  flagsVisibility     VisibilityTier @default(PARTNER_ONLY)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
 
   @@unique([userId, weekLabel])
   @@index([weekStartDate])
@@ -424,3 +437,57 @@ model MigrationLog {
 
   @@map("migration_logs")
 }
+
+// ============================================================================
+// W3C PRIVACY & OWASP ASVS v5.0.0 SCHEMA ENHANCEMENTS
+// ============================================================================
+
+// User Consent Tracking Ledger (W3C §2.12.1, ASVS v5.0.0-14.1.3)
+model UserConsent {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId           String    @db.Uuid
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purposeCode      String    // "LEADER_OVERVIEW", "PARTNER_SHARING", "EMAIL_REMINDERS"
+  granted          Boolean   @default(false)
+  grantedAt        DateTime  @default(now())
+  revokedAt        DateTime?
+  ipAddress        String?
+  userAgent        String?
+  policyVersion    String    // "2026.1"
+
+  @@index([userId, purposeCode])
+  @@map("user_consents")
+}
+
+// Abuse & Safety Reporting (W3C §2.9.1, ASVS v5.0.0-2.1.1)
+model AbuseReport {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  reporterId       String    @db.Uuid
+  reporter         User      @relation("ReporterAbuse", fields: [reporterId], references: [id])
+  reportedUserId   String?   @db.Uuid
+  reportedUser     User?     @relation("ReportedAbuse", fields: [reportedUserId], references: [id])
+  contextType      String    // "CIRCLE_MESSAGE", "PRAYER_REQUEST", "DIRECT_HARASSMENT"
+  details          String    @db.Text
+  status           String    @default("PENDING") // PENDING, UNDER_REVIEW, RESOLVED, DISMISSED
+  resolutionNotes  String?   @db.Text
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([reporterId])
+  @@map("abuse_reports")
+}
+
+// Data Access Audit Logging (W3C §2.8, ASVS v5.0.0-16.1.1)
+model DataAccessAuditLog {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actorId          String    @db.Uuid       // Leader or Admin who accessed the record
+  targetUserId     String    @db.Uuid       // Member whose record was viewed
+  recordType       String                   // "CHECK_IN", "PROFILE", "GROWTH_SCORE"
+  recordId         String                   // Specific record UUID
+  accessReason     String                   // Explicit justification
+  accessedAt       DateTime  @default(now())
+
+  @@index([targetUserId])
+  @@map("data_access_audit_logs")
+}
+

@@ -143,19 +143,20 @@ async function ensureDatabase() {
 
   // 4. Ensure Super Admin account exists (only created if no admin exists)
   const existingAdmin = await prisma.user.findFirst({
-    where: { role: Role.ADMIN },
+    where: { roleId: 40 },
   });
 
   if (!existingAdmin) {
-    console.log("👑 Provisioning initial Super Admin (admin@bic.app / admin1234)...");
+    console.log("👑 Provisioning initial Super Admin (admin@bic.app)...");
     const level5 = await prisma.level.findUnique({ where: { levelNumber: 5 } });
-    const superAdminPasswordHash = hashPassword("admin1234");
+    const superAdminPassword = process.env.ADMIN_INITIAL_PASSWORD || "AdminPassword2026!";
+    const superAdminPasswordHash = hashPassword(superAdminPassword);
 
     await prisma.user.create({
       data: {
         email: "admin@bic.app",
         passwordHash: superAdminPasswordHash,
-        role: Role.ADMIN,
+        roleId: 40,
         currentLevelId: level5?.id,
         profile: {
           create: {

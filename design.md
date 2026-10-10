@@ -24,40 +24,40 @@ Defined in `app/globals.css`:
 
 | Token | CSS Variable | Hex / Value | Role / Usage |
 | :--- | :--- | :--- | :--- |
-| **Canvas Background** | `--background` | `#e9edf3` | Soft slate/stone neutral base |
-| **Foreground / Text** | `--foreground` | `#17202f` | High-contrast dark charcoal for primary typography |
-| **Surface Base** | `--surface` | `#e9edf3` | Matched to background for embossed neumorphic elements |
+| **Canvas Background** | `--background` | `#eef2f6` | Soft slate/stone neutral base |
+| **Foreground / Text** | `--foreground` | `#111827` | High-contrast dark charcoal for primary typography |
+| **Surface Base** | `--surface` | `#ffffff` | Crisp white card surface |
 | **Surface Dark** | `--surface-strong` | `#162033` | Deep obsidian blue-gray for spotlight and hero cards |
 | **Kingdom Gold** | `--gold` | `#b68b35` | Primary action / active state — the single "this is selected or actionable" signal |
 | **Kingdom Accent** | `--accent` | `#1f7a68` | Positive/healthy status only — never used for "primary action" |
 | **Kingdom Accent Dark**| `--accent-strong` | `#125444` | Solid emerald contrast for positive status indicators |
-| **Muted Text** | `--muted` | `#5f6d80` | Secondary descriptions, timestamps, metadata labels |
-| **Border Neutral** | `--border` | `rgba(119, 132, 154, 0.26)` | Subtle dividing lines and card definition |
+| **Muted Text** | `--muted` | `#475569` | Secondary descriptions, timestamps, metadata labels (WCAG AA compliant) |
+| **Border Neutral** | `--border` | `rgba(100, 116, 139, 0.2)` | Subtle dividing lines and card definition |
 
 **Accent rule (applies to both consoles, no exceptions):**
 - **Gold** = primary action, active nav state, selected tab, "your thing to do." Used identically in the Member Portal and the Leadership Console.
 - **Green** = positive/healthy status only (on-track streak, healthy circle, resolved flag). It is a status color, never a call-to-action color.
 - Leadership does **not** get its own accent identity. It uses the same gold-for-action / green-for-status split as the member portal. The only thing that visually distinguishes Leadership is the sidebar label and route, not a different primary hue.
 
-### 2.2 Elevation & Neumorphic Tactility — used sparingly, on purpose
+### 2.2 Elevation & Modern Tactility
 
 Elevation is reserved for surfaces the user manipulates or scans as a set. It is **not** a default page-section wrapper.
 
 - **Standard Card Shadow (`--shadow`)**:  
-  `-10px -10px 22px rgba(255, 255, 255, 0.85), 10px 10px 24px rgba(136, 151, 172, 0.36)`  
-  Used only on true card components (see §2.5).
+  `0 1px 3px rgba(15, 23, 42, 0.05), 0 4px 12px rgba(15, 23, 42, 0.04)`  
+  Clean, subtle ambient depth on white card surfaces.
 - **Deep Card Shadow (`--shadow-strong`)**:  
-  `-16px -16px 36px rgba(255, 255, 255, 0.9), 18px 18px 38px rgba(125, 141, 165, 0.42)`  
+  `0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 12px 28px -4px rgba(15, 23, 42, 0.08)`  
   Reserved for floating/overlay surfaces: modals, the check-in wizard step panel, toasts.
 - **Pressed / Recessed Inset (`--shadow-inset`)**:  
-  `inset -7px -7px 14px rgba(255, 255, 255, 0.86), inset 7px 7px 14px rgba(130, 146, 170, 0.32)`  
+  `inset 0 1px 2px rgba(15, 23, 42, 0.06)`  
   Active button presses, inputs, selected nav states only.
 
 ### 2.3 Geometry & Radii
-- **Primary Radius (`--radius`)**: `26px` — cards and floating surfaces only.
-- **Secondary Radius (`--radius-sm`)**: `18px` — nested sub-cards, pills, mobile nav.
+- **Primary Radius (`--radius`)**: `16px` — cards and floating surfaces.
+- **Secondary Radius (`--radius-sm`)**: `10px` — sub-cards, pills, small modules.
 - **Pill / Circular Radius**: `999px` — buttons, status chips, avatar circles.
-- **Section Radius (new — `--radius-flat`)**: `0px` / no radius, no shadow. Applied to plain sections (see §2.5). Sections are separated by spacing and a `--border` hairline, never by elevation.
+- **Section Radius (`--radius-flat`)**: `0px` / no radius, no shadow. Applied to plain sections (see §2.5). Sections are separated by spacing and a `--border` hairline, never by elevation.
 
 ### 2.4 Typography Hierarchy
 

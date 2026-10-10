@@ -10,6 +10,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { PortalShell } from "@/src/components/portal/PortalShell";
+import { MetricCard } from "@/components/cards";
 
 type Status = "PRESENT" | "EXCUSED" | "LATE" | "ABSENT";
 
@@ -157,15 +158,13 @@ export default function MemberAttendancePage() {
               <h3 className="heading-md" style={{ margin: 0, fontSize: "1.1rem" }}>Reliability Marker</h3>
             </div>
 
-            <div className="card stack-sm" style={{ textAlign: "center", background: "rgba(255,255,255,0.7)", padding: 20 }}>
-              <span className="data-label">Last 90 Days</span>
-              <strong className="data-value" style={{ fontSize: "2.6rem", margin: "4px 0" }}>
-                92%
-              </strong>
-              <span className="data-detail" style={{ color: "var(--accent)", fontWeight: 700 }}>
-                Faithful Presence
-              </span>
-            </div>
+            <MetricCard
+              label="Last 90 Days"
+              value="92%"
+              detail="Faithful Presence"
+              tone="healthy"
+              detailTrend="up"
+            />
 
             <div className="scripture-lockup">
               <p style={{ fontStyle: "italic", fontSize: "0.88rem", margin: "0 0 4px", color: "#2d3748" }}>

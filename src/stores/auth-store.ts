@@ -19,7 +19,7 @@ export interface UserSession {
 interface AuthState {
   currentUser: UserSession | null;
   isHydrated: boolean;
-  initSession: () => void;
+  initSession: () => Promise<void>;
   setCurrentUser: (user: UserSession | null) => void;
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string; user?: UserSession }>;
   signUp: (formData: {
@@ -30,46 +30,45 @@ interface AuthState {
     city?: string;
     church?: string;
   }) => Promise<{ success: boolean; error?: string; user?: UserSession }>;
-  signOut: () => void;
+  signOut: () => Promise<void>;
   isLeader: () => boolean;
   isAdmin: () => boolean;
 }
 
+/**
+ * Zustand Auth Store conforming to ASVS v5.0.0-7.1.1 and W3C §2.3.
+ * ZERO PII and auth tokens in localStorage to protect against client-side XSS session hijacking.
+ */
 export const useAuthStore = create<AuthState>((set, get) => ({
   currentUser: null,
   isHydrated: false,
 
-  initSession: () => {
+  initSession: async () => {
+    // Purge any legacy session tokens from localStorage (SEC-04 remediation)
     if (typeof window !== "undefined") {
       try {
-        const stored = window.localStorage.getItem("bic_user_session");
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          // Guard: role must be a plain code string (e.g. "ADMIN").
-          // Wipe stale sessions that have an integer FK or object from before the schema change.
-          if (parsed && typeof parsed.role === "string") {
-            set({ currentUser: parsed, isHydrated: true });
-            return;
-          }
-          // Stale session — clear it so the user gets a fresh sign-in
-          window.localStorage.removeItem("bic_user_session");
-        }
-      } catch (e) {
-        console.error("Failed to parse stored session", e);
+        window.localStorage.removeItem("bic_user_session");
+      } catch {
+        // Ignore in restricted environments
       }
-      set({ currentUser: null, isHydrated: true });
     }
+
+    try {
+      const res = await fetch("/api/auth/me");
+      if (res.ok) {
+        const data = await res.json();
+        set({ currentUser: data.user, isHydrated: true });
+        return;
+      }
+    } catch {
+      // Network/offline fallback
+    }
+
+    set({ currentUser: null, isHydrated: true });
   },
 
   setCurrentUser: (user) => {
     set({ currentUser: user, isHydrated: true });
-    if (typeof window !== "undefined") {
-      if (user) {
-        window.localStorage.setItem("bic_user_session", JSON.stringify(user));
-      } else {
-        window.localStorage.removeItem("bic_user_session");
-      }
-    }
   },
 
   signIn: async (email: string, password: string) => {
@@ -86,10 +85,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       set({ currentUser: data.user, isHydrated: true });
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem("bic_user_session", JSON.stringify(data.user));
-      }
-
       return { success: true, user: data.user };
     } catch {
       return { success: false, error: "Network error during sign-in." };
@@ -110,20 +105,27 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       set({ currentUser: data.user, isHydrated: true });
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem("bic_user_session", JSON.stringify(data.user));
-      }
-
       return { success: true, user: data.user };
     } catch {
       return { success: false, error: "Network error during registration." };
     }
   },
 
-  signOut: () => {
-    if (typeof window !== "undefined") {
-      window.localStorage.removeItem("bic_user_session");
+  signOut: async () => {
+    try {
+      await fetch("/api/auth/signout", { method: "POST" });
+    } catch {
+      // Ignore network errors on signout
     }
+
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.removeItem("bic_user_session");
+      } catch {
+        // Ignore
+      }
+    }
+
     set({ currentUser: null, isHydrated: true });
   },
 
@@ -134,4 +136,3 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   isAdmin: () => get().currentUser?.role === "ADMIN",
 }));
-

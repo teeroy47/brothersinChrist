@@ -47,7 +47,7 @@ export function SignInForm() {
         </div>
         <h1 className="heading-lg" style={{ margin: 0 }}>Sign in to BIC</h1>
         <p className="muted" style={{ margin: 0, fontSize: "0.92rem" }}>
-          Enter your registered email and password to access your discipleship portal.
+          Enter your registered email and password to access your account.
         </p>
       </div>
 
@@ -151,6 +151,12 @@ export function SignUpForm() {
       return;
     }
 
+    if (form.password.length < 12) {
+      setError("Password must be at least 12 characters.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await signUp(form);
       if (!res.success) {
@@ -175,7 +181,7 @@ export function SignUpForm() {
         </div>
         <h1 className="heading-lg" style={{ margin: 0 }}>Join the Brotherhood</h1>
         <p className="muted" style={{ margin: 0, fontSize: "0.92rem" }}>
-          Create your account to be placed into a discipleship circle and start Level 1 formation.
+          Create your account to join a group and get started.
         </p>
       </div>
 
@@ -229,8 +235,9 @@ export function SignUpForm() {
         <input
           name="password"
           type="password"
-          placeholder="Choose a strong password"
+          placeholder="At least 12 characters"
           required
+          minLength={12}
           autoComplete="new-password"
           value={form.password}
           onChange={set("password")}

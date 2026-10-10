@@ -15,6 +15,7 @@ import {
   Check,
 } from "lucide-react";
 import { PortalShell } from "@/src/components/portal/PortalShell";
+import { MetricCard, SubCard } from "@/components/cards";
 import { useAuthStore } from "@/src/stores/auth-store";
 
 export default function MemberProfilePage() {
@@ -122,27 +123,23 @@ export default function MemberProfilePage() {
         {/* Placement & Accountability Info                                    */}
         {/* ------------------------------------------------------------------ */}
         <div className="grid-3">
-          <div className="card stack-sm">
-            <span className="eyebrow">Formation Level</span>
-            <strong className="heading-md" style={{ color: "var(--gold)", margin: 0 }}>
-              {levelTitle}
-            </strong>
-            <span className="muted" style={{ fontSize: "0.78rem" }}>Stage {levelNumber} of 5</span>
-          </div>
-
-          <div className="card stack-sm">
-            <span className="eyebrow">Assigned Small Group</span>
-            <strong className="heading-md" style={{ margin: 0 }}>{groupName}</strong>
-            <span className="muted" style={{ fontSize: "0.78rem" }}>Leader: Simba Ndlovu</span>
-          </div>
-
-          <div className="card stack-sm">
-            <span className="eyebrow">Accountability Brother</span>
-            <strong className="heading-md" style={{ margin: 0 }}>Simba Ndlovu</strong>
-            <span style={{ fontSize: "0.78rem", color: "var(--accent)", fontWeight: 700 }}>
-              Assigned & Active
-            </span>
-          </div>
+          <MetricCard
+            label="Formation Level"
+            value={levelTitle}
+            detail={`Stage ${levelNumber} of 5`}
+            tone="steady"
+          />
+          <MetricCard
+            label="Assigned Small Group"
+            value={groupName}
+            detail="Leader: Simba Ndlovu"
+          />
+          <MetricCard
+            label="Accountability Brother"
+            value="Simba Ndlovu"
+            detail="Assigned & Active"
+            tone="healthy"
+          />
         </div>
 
         {/* ------------------------------------------------------------------ */}
@@ -158,13 +155,12 @@ export default function MemberProfilePage() {
 
             <div className="stack-sm" style={{ gap: 10 }}>
               {profile.spiritualGoals.map((goal, idx) => (
-                <div
+                <SubCard
                   key={idx}
-                  className="card stack-sm"
                   style={{
-                    background: "rgba(255,255,255,0.7)",
                     padding: 12,
                     fontSize: "0.85rem",
+                    display: "flex",
                     flexDirection: "row",
                     alignItems: "center",
                     gap: 10,
@@ -172,7 +168,7 @@ export default function MemberProfilePage() {
                 >
                   <Sparkles size={16} style={{ color: "var(--gold)", flexShrink: 0 }} />
                   <span>{goal}</span>
-                </div>
+                </SubCard>
               ))}
             </div>
           </div>
@@ -186,13 +182,12 @@ export default function MemberProfilePage() {
 
             <div className="stack-sm" style={{ gap: 10 }}>
               {profile.fitnessGoals.map((goal, idx) => (
-                <div
+                <SubCard
                   key={idx}
-                  className="card stack-sm"
                   style={{
-                    background: "rgba(255,255,255,0.7)",
                     padding: 12,
                     fontSize: "0.85rem",
+                    display: "flex",
                     flexDirection: "row",
                     alignItems: "center",
                     gap: 10,
@@ -200,7 +195,7 @@ export default function MemberProfilePage() {
                 >
                   <Sparkles size={16} style={{ color: "var(--gold)", flexShrink: 0 }} />
                   <span>{goal}</span>
-                </div>
+                </SubCard>
               ))}
             </div>
           </div>

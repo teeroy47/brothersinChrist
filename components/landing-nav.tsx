@@ -46,43 +46,34 @@ export function LandingNav() {
           </Link>
         </div>
 
-        <div className="chm-26 landing-mobile-menu" aria-label="Mobile navigation">
-          <input
-            type="checkbox"
-            id={id}
-            className="chm-26__state"
-            checked={open}
-            onChange={(event) => setOpen(event.target.checked)}
-          />
-          <div className="chm-26__plate">
-            <label htmlFor={id} className="chm-26__btn" aria-label={open ? "Close menu" : "Open menu"}>
-              <Menu className="chm-26__menu-icon" aria-hidden="true" size={25} strokeWidth={2.4} />
-              <X className="chm-26__close-icon" aria-hidden="true" size={25} strokeWidth={2.4} />
-            </label>
-          </div>
-          <nav className="chm-26__menu" aria-label="Menu" aria-hidden={!open}>
-            {menuLinks.map(({ href, label, Icon }, index) => (
-              <Link key={href} href={href} style={{ "--i": index } as CSSProperties} tabIndex={open ? undefined : -1} onClick={() => setOpen(false)}>
-                <span className="chm-26__link-icon" aria-hidden="true">
-                  <Icon size={18} strokeWidth={2.2} />
-                </span>
-                {label}
+        <button
+          type="button"
+          className="landing-mobile-toggle"
+          aria-label={open ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={open}
+          onClick={() => setOpen(!open)}
+        >
+          {open ? <X size={22} strokeWidth={2.2} /> : <Menu size={22} strokeWidth={2.2} />}
+        </button>
+
+        {open && (
+          <nav className="landing-mobile-menu" aria-label="Mobile Navigation">
+            {menuLinks.map(({ href, label, Icon }) => (
+              <Link key={href} href={href} onClick={() => setOpen(false)}>
+                <Icon size={18} strokeWidth={2.2} />
+                <span>{label}</span>
               </Link>
             ))}
-            <Link href="/signin" style={{ "--i": menuLinks.length } as CSSProperties} tabIndex={open ? undefined : -1} onClick={() => setOpen(false)}>
-              <span className="chm-26__link-icon" aria-hidden="true">
-                <ShieldCheck size={18} strokeWidth={2.2} />
-              </span>
-              Sign In
+            <Link href="/signin" onClick={() => setOpen(false)}>
+              <ShieldCheck size={18} strokeWidth={2.2} />
+              <span>Sign In</span>
             </Link>
-            <Link href="/signup" style={{ "--i": menuLinks.length + 1 } as CSSProperties} tabIndex={open ? undefined : -1} onClick={() => setOpen(false)}>
-              <span className="chm-26__link-icon" aria-hidden="true">
-                <ArrowRight size={18} strokeWidth={2.2} />
-              </span>
-              Join
+            <Link href="/signup" onClick={() => setOpen(false)} style={{ color: "var(--gold)" }}>
+              <ArrowRight size={18} strokeWidth={2.2} />
+              <span>Join</span>
             </Link>
           </nav>
-        </div>
+        )}
       </div>
     </header>
   );

@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+export type VisibilityTier = "PRIVATE" | "PARTNER_ONLY" | "LEADER_DISCLOSED" | "CIRCLE_SHARED";
+
 export interface CheckInFormData {
   prayerDays: number;
   bibleDays: number;
@@ -7,8 +9,11 @@ export interface CheckInFormData {
   metAccountability: boolean;
   servingContribution: string;
   strugglesAndNeeds: string;
+  strugglesVisibility: VisibilityTier;
   praiseReport: string;
+  praiseVisibility: VisibilityTier;
   flags: string[];
+  flagsVisibility: VisibilityTier;
 }
 
 const initialForm: CheckInFormData = {
@@ -18,8 +23,11 @@ const initialForm: CheckInFormData = {
   metAccountability: true,
   servingContribution: "",
   strugglesAndNeeds: "",
+  strugglesVisibility: "PRIVATE",
   praiseReport: "",
+  praiseVisibility: "CIRCLE_SHARED",
   flags: [],
+  flagsVisibility: "PARTNER_ONLY",
 };
 
 interface CheckInState {

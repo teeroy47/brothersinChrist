@@ -5,6 +5,7 @@ import { BlurFade } from "@/components/blur-fade";
 import { BlurFadeText } from "@/components/blur-fade-text";
 import { HeroCarousel } from "@/components/hero-carousel";
 import { LandingNav } from "@/components/landing-nav";
+import { ScrollReveal } from "@/components/scroll-reveal";
 import { withBasePath } from "@/lib/paths";
 
 const missionPillars = [
@@ -22,6 +23,7 @@ const pathSteps = [
 export default function LandingPage() {
   return (
     <>
+      <ScrollReveal />
       <LandingNav />
 
       <main className="landing-page">
@@ -29,26 +31,26 @@ export default function LandingPage() {
           <div className="container landing-hero-grid">
             <HeroCarousel>
               <div className="desktop-hero-copy">
-                <BlurFadeText as="h1" text="Iron sharpens iron." delay={0.18} stagger={0.92} duration={1.32} yOffset={10} blur="16px" />
-                <BlurFadeText as="p" text="As iron sharpens iron, so one man sharpens another. Proverbs 27:17" delay={3.02} stagger={0.08} duration={0.72} yOffset={4} blur="7px" />
-                <BlurFade delay={3.38} duration={0.9} yOffset={5} blur="8px">
+                <BlurFadeText as="h1" text="Iron sharpens iron." delay={0.05} stagger={0.06} duration={0.4} yOffset={8} blur="8px" />
+                <BlurFadeText as="p" text="As iron sharpens iron, so one man sharpens another. Proverbs 27:17" delay={0.15} stagger={0.04} duration={0.4} yOffset={4} blur="4px" />
+                <BlurFade delay={0.22} duration={0.3} yOffset={4} blur="4px">
                   <Link href="/signup" className="button landing-primary-cta desktop-hero-cta">
-                    Join
+                    Join Brothers In Christ
                   </Link>
                 </BlurFade>
               </div>
             </HeroCarousel>
 
             <div className="stack landing-hero-copy mobile-hero-copy">
-              <BlurFadeText as="h1" text="Iron sharpens iron." className="landing-title" delay={0.18} stagger={0.92} duration={1.32} yOffset={10} blur="16px" />
-              <BlurFadeText as="p" text="As iron sharpens iron, so one man sharpens another." className="landing-lede" delay={3.08} stagger={0.08} duration={0.72} yOffset={4} blur="7px" />
-              <BlurFade delay={3.82} duration={0.72} yOffset={4} blur="6px">
-                <span className="eyebrow">Proverbs 27:17 Core Scripture</span>
+              <BlurFadeText as="h1" text="Iron sharpens iron." className="landing-title" delay={0.05} stagger={0.06} duration={0.4} yOffset={8} blur="8px" />
+              <BlurFadeText as="p" text="As iron sharpens iron, so one man sharpens another." className="landing-lede" delay={0.15} stagger={0.04} duration={0.4} yOffset={4} blur="4px" />
+              <BlurFade delay={0.2} duration={0.3} yOffset={4} blur="4px">
+                <span className="eyebrow" style={{ color: "var(--gold)" }}>Proverbs 27:17 Core Scripture</span>
               </BlurFade>
-              <BlurFade delay={4.02} duration={0.76} yOffset={4} blur="6px">
+              <BlurFade delay={0.25} duration={0.3} yOffset={4} blur="4px">
                 <div className="landing-cta-row">
                   <Link href="/signup" className="button landing-primary-cta">
-                    Join
+                    Join Brothers In Christ
                   </Link>
                 </div>
               </BlurFade>
