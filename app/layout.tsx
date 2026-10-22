@@ -3,7 +3,6 @@ import type { Metadata, Viewport } from "next";
 
 import "@/app/globals.css";
 import { SessionProvider } from "@/components/session-provider";
-import { ScrollReveal } from "@/components/scroll-reveal";
 import { withBasePath } from "@/lib/paths";
 
 export const metadata: Metadata = {
@@ -28,7 +27,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body suppressHydrationWarning>
-        <ScrollReveal />
         <SessionProvider>{children}</SessionProvider>
       </body>
     </html>

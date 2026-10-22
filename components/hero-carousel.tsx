@@ -29,7 +29,7 @@ export function HeroCarousel({ children }: { children?: ReactNode }) {
 
     const interval = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % slides.length);
-    }, 2000);
+    }, 6000);
 
     return () => window.clearInterval(interval);
   }, []);
